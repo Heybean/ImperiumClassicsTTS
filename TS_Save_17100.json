@@ -1,7 +1,7 @@
 {
   "SaveName": "Imperium Classics/Legends v0.24",
-  "EpochTime": 1629160650,
-  "Date": "8/16/2021 5:37:30 PM",
+  "EpochTime": 1629161454,
+  "Date": "8/16/2021 5:50:54 PM",
   "VersionNumber": "v13.1.1",
   "GameMode": "Imperium Classics/Legends",
   "GameType": "Game",
@@ -341,7 +341,7 @@
     "TurnColor": ""
   },
   "DecalPallet": [],
-  "LuaScript": "--Imperium Legends\r\nDEBUG = false\r\n\r\nNationPowerCardsGUID = {'b8bedc', 'c82b68', 'f16b2d', 'ce64db', '489f4f', '41ec0d', 'a3fb54', '69a1cb',\r\n  'c6650c', '626f05', '963ad9', '2cf524', '1031e5', 'c38eb7', 'b26040', 'afdd2a'}\r\n\r\n-- key is the power card's GUID with an underscore prepended to it, value is table with [1] = deck's GUID and [2] = tributary card's GUID\r\nRemoveTributarySetupGUID = {\r\n  _f16b2d = {'8d6d65', '9c7dbe'},     -- Egyptians\r\n  _ce64db = {'8d6d65', '1dd8d0'},     -- Olmecs\r\n  _489f4f = {'8d6d65', '112d66'},     -- Mauryans\r\n  _41ec0d = {'8d6d65', 'ee8157'},     -- Qin\r\n  _69a1cb = {'8d6d65', 'e81969'},     -- Minoans\r\n  _b26040 = {'7b35e0', 'a456f3'},     -- Persians\r\n  _afdd2a = {'7b35e0', 'dd5f20'},     -- Macedonians\r\n  _c38eb7 = {'7b35e0', '042935'},     -- Vikings\r\n  _1031e5 = {'7b35e0', '7cc86d'},     -- Carthaginians\r\n  _2cf524 = {'7b35e0', '2ece0a'},     -- Scythians\r\n  _963ad9 = {'7b35e0', '7a2282'},     -- Celts\r\n  _c6650c = {'7b35e0', '026516'},     -- Greeks\r\n  _626f05 = {'7b35e0', '2f2fd6'}      -- Romans\r\n}\r\n\r\n--last ID is first deck\r\nlegendSetGUID = {'04efdc', '26dcbf', 'b84281', 'f780f6', '7b35e0'}\r\nclassicSetGUID = {'6cf53b', '01dca8', 'ce5f4b', 'bd536f', '8d6d65'}\r\nunrestDeckGUID = '10863e'\r\n\r\nButtonBoardGUID = '5f50b8'\r\nTrashId = \"a4e45c\"\r\nShuffleZoneGUID = \"0e7481\"\r\nUnrestZoneGUID = \"c5991e\"\r\nDecksZoneGUID = \"5be833\"\r\nGeneralDeckZoneGUID = \"61f3d2\"\r\nExileZoneGUID = \"3c8e06\"\r\nMarketRowZoneGUID = \"10e29b\"\r\n\r\nProgressTokenBagGUID = \"8a580b\"\r\n\r\nposDecks = {{1.25, 0.98, 31.75},\r\n            {7.25, 0.98, 31.75},\r\n            {13.25, 0.98, 31.75},\r\n            {19.25, 0.98, 31.75},\r\n            {-7.25, 0.98, 31.75}}\r\n\r\nposSoloTokens = {\r\n  {-16.25, 1.69, 17.25},\r\n  {-9.75, 1.11, 17.25},\r\n  {-4.75, 1.11, 17.25},\r\n  {1.25, 1.11, 17.25},\r\n  {7.25, 1.11, 17.25},\r\n  {13.25, 1.11, 17.25},\r\n  {19.25, 1.11, 17.25}\r\n}\r\n\r\nsoloBagGUID = '4d7d45'\r\nsoloTokensGUID = {'7a208f', 'db4ee5', '01312b', '8a05bc', '97f6ec', '9b98ef', '328e96'}\r\n\r\nfunction nullFunc()\r\nend\r\n\r\nfunction onSave()\r\n  local state = {}\r\n  state.SelectedNationsByPlayerGUID = SelectedNationsByPlayerGUID\r\n  state.SelectedNationsGUID = SelectedNationsGUID\r\n  state.SavedPositionsGUID = SavedPositionsGUID\r\n  state.SoloGame = SoloGame\r\n  state.BotColor = BotColor\r\n  state.BotScoreType = BotScoreType\r\n  state.SoloSelectForWho = SoloSelectForWho\r\n  return JSON.encode(state)\r\nend\r\n\r\nfunction onLoad(save_data)\r\n    if save_data ~= \"\" then\r\n        data = JSON.decode(save_data)\r\n        SelectedNationsByPlayerGUID = data.SelectedNationsByPlayerGUID\r\n        SelectedNationsGUID = data.SelectedNationsGUID\r\n        SavedPositionsGUID = data.SavedPositionsGUID\r\n        SoloGame = data.SoloGame\r\n        BotColor = data.BotColor\r\n        BotScoreType = data.BotScoreType\r\n        SoloSelectForWho = data.SoloSelectForWho\r\n    end\r\n\r\n    math.randomseed(os.time())\r\n\r\n    ButtonBoard = getObjectFromGUID(ButtonBoardGUID)\r\n\r\n    --createRecallButtons()\r\n    --createCalculateScoreButton()\r\nend\r\n\r\nfunction playerCountMenu()\r\n    ButtonBoard.clearButtons()\r\n    ButtonBoard.createButton({\r\n        click_function = \"nullFunc\",\r\n        function_owner = Global,\r\n        label          = \"Which game mode?\",\r\n        position       = {0, 0.4, -3},\r\n        width          = 0,\r\n        height         = 0,\r\n        font_size      = 250,\r\n        font_color     = \"White\",\r\n    })\r\n\r\n    ButtonBoard.createButton({\r\n        click_function = \"soloModeClick\",\r\n        function_owner = Global,\r\n        label          = 'Solo',\r\n        position       = {0, 0.4, -1},\r\n        rotation       = {0, 0, 0},\r\n        width          = 1400,\r\n        height         = 400,\r\n        font_size      = 175,\r\n        tooltip        = '',\r\n    })\r\n\r\n    ButtonBoard.createButton({\r\n        click_function = \"normalModeClick\",\r\n        function_owner = Global,\r\n        label          = 'Normal',\r\n        position       = {0, 0.4, 1},\r\n        rotation       = {0, 0, 0},\r\n        width          = 1400,\r\n        height         = 400,\r\n        font_size      = 175,\r\n        tooltip        = '',\r\n    })\r\nend\r\n\r\nfunction normalModeClick()\r\n    ButtonBoard.clearButtons()\r\n    ButtonBoard.createButton({\r\n        click_function = \"nullFunc\",\r\n        function_owner = Global,\r\n        label          = \"Please select a nation before\\nstarting the game.\",\r\n        position       = {0, 0.4, -3},\r\n        width          = 0,\r\n        height         = 0,\r\n        font_size      = 250,\r\n        font_color     = \"White\",\r\n    })\r\n\r\n    ButtonBoard.createButton({\r\n        click_function = \"startGameClick\",\r\n        function_owner = Global,\r\n        label          = 'Start Game',\r\n        position       = {0, 0.4, 0},\r\n        width          = 1400,\r\n        height         = 400,\r\n        font_size      = 175,\r\n        tooltip        = '',\r\n    })\r\nend\r\n\r\nfunction createBotColorMenu()\r\n  local y = -1.5\r\n  local offset = 1.2\r\n  ButtonBoard.clearButtons()\r\n  ButtonBoard.createButton({\r\n      click_function = \"nullFunc\",\r\n      function_owner = Global,\r\n      label          = \"Which player will be the BOT?\",\r\n      position       = {0, 0.4, -3},\r\n      width          = 0,\r\n      height         = 0,\r\n      font_color     = \"White\",\r\n      font_size      = 250,\r\n  })\r\n  ButtonBoard.createButton({\r\n      click_function = \"botRedClick\",\r\n      function_owner = Global,\r\n      position       = {0, 0.4, y},\r\n      width          = 1200,\r\n      height         = 400,\r\n      font_size      = 250,\r\n      color          = \"Red\",\r\n      label          = \"Red\"\r\n  })\r\n  ButtonBoard.createButton({\r\n      click_function = \"botYellowClick\",\r\n      function_owner = Global,\r\n      position       = {0, 0.4, y + offset},\r\n      width          = 1200,\r\n      height         = 400,\r\n      font_size      = 250,\r\n      color          = \"Yellow\",\r\n      label          = \"Yellow\"\r\n  })\r\n  ButtonBoard.createButton({\r\n      click_function = \"botGreenClick\",\r\n      function_owner = Global,\r\n      position       = {0, 0.4, y + offset * 2},\r\n      width          = 1200,\r\n      height         = 400,\r\n      font_size      = 250,\r\n      color          = \"Green\",\r\n      label          = \"Green\"\r\n  })\r\n  ButtonBoard.createButton({\r\n      click_function = \"botBlueClick\",\r\n      function_owner = Global,\r\n      position       = {0, 0.4, y + offset * 3},\r\n      width          = 1200,\r\n      height         = 400,\r\n      font_size      = 250,\r\n      color          = \"Blue\",\r\n      label          = \"Blue\"\r\n  })\r\nend\r\n\r\nfunction createBotDiffScoreMenu(player)\r\n  -- Check if player already selected nation. If so, set to bot select\r\n  if SelectedNationsByPlayerGUID[player] ~= nil then\r\n    SoloSelectForWho = 1\r\n    broadcastToAll(\"The next nation you select will be for the Bot.\")\r\n  end\r\n\r\n  ButtonBoard.clearButtons()\r\n  ButtonBoard.createButton({\r\n      click_function = \"nullFunc\",\r\n      function_owner = Global,\r\n      label          = \"Select Bot Difficulty for Scoring\",\r\n      position       = {0, 0.4, -3},\r\n      width          = 0,\r\n      height         = 0,\r\n      font_color     = \"White\",\r\n      font_size      = 250,\r\n  })\r\n  ButtonBoard.createButton({\r\n      click_function = \"botScoreDiff1Click\",\r\n      function_owner = Global,\r\n      position       = {0, 0.4, -1},\r\n      width          = 3500,\r\n      height         = 400,\r\n      font_size      = 250,\r\n      label          = \"Chieftain / Warlord / Imperator\"\r\n  })\r\n  ButtonBoard.createButton({\r\n      click_function = \"botScoreDiff2Click\",\r\n      function_owner = Global,\r\n      position       = {0, 0.4, 1},\r\n      width          = 3500,\r\n      height         = 400,\r\n      font_size      = 250,\r\n      label          = \"Sovereign / Overlord\"\r\n  })\r\nend\r\n\r\nfunction botScoreDiff1Click()\r\n    BotScoreType = 1\r\n    createSoloStartMenu()\r\nend\r\n\r\nfunction botScoreDiff2Click()\r\n    BotScoreType = 2\r\n    createSoloStartMenu()\r\nend\r\n\r\nfunction createSoloStartMenu()\r\n    ButtonBoard.clearButtons()\r\n\r\n    ButtonBoard.createButton({\r\n        click_function = \"nullFunc\",\r\n        function_owner = Global,\r\n        label          = \"Please select a nation for you\\nand the Bot before starting\\nthe game.\",\r\n        position       = {0, 0.4, -2.75},\r\n        width          = 0,\r\n        height         = 0,\r\n        font_size      = 250,\r\n        font_color     = \"White\",\r\n    })\r\n\r\n    ButtonBoard.createButton({\r\n        click_function = \"startGameClick\",\r\n        function_owner = Global,\r\n        label          = 'Start Game',\r\n        position       = {0, 0.4, 0},\r\n        width          = 1400,\r\n        height         = 400,\r\n        font_size      = 175,\r\n        tooltip        = '',\r\n    })\r\nend\r\n\r\n-- If there are enough players with selected nations, returns true\r\nfunction playerNationSelectedSafetyCheck()\r\n    local unreadyPlayers = {}\r\n    local players = getSeatedPlayersWithHands()\r\n\r\n    if SoloGame then\r\n      playerCount = 2\r\n    end\r\n\r\n    for _, player in ipairs(players) do\r\n      -- Check to see if selected nation\r\n      if SelectedNationsByPlayerGUID[player] == nil then\r\n        table.insert(unreadyPlayers, player)\r\n\r\n        local name = Player[player].steam_name\r\n        if SoloGame and player == BotColor then\r\n          name = \"BOT\"\r\n          broadcastToAll(\"Please select a nation for the \" .. BotColor .. \" Bot.\", Player[player].color)\r\n        else\r\n          if name == nil then\r\n            name = player\r\n          end\r\n          broadcastToAll(name .. \" needs to select a nation before the game can start.\", Player[player].color)\r\n        end\r\n      end\r\n    end\r\n\r\n    return #players - #unreadyPlayers >= playerCount\r\nend\r\n\r\nfunction CloseMenu()\r\n    ButtonBoard.destroy()\r\nend\r\n\r\nfunction setupClassic()\r\n    cardSetGUID = classicSetGUID\r\n    for _, deckGuid in pairs(legendSetGUID) do\r\n        deck = getObjectFromGUID(deckGuid)\r\n        getObjectFromGUID(TrashId).putObject(deck)\r\n    end\r\n\r\n    playerCountMenu()\r\nend\r\n\r\nfunction setupImperium()\r\n    cardSetGUID = legendSetGUID\r\n    for _, deckGuid in pairs(classicSetGUID) do\r\n        deck = getObjectFromGUID(deckGuid)\r\n        getObjectFromGUID(TrashId).putObject(deck)\r\n    end\r\n\r\n    playerCountMenu()\r\nend\r\n\r\nfunction setupMix()\r\n    cardSetGUID = {}\r\n\r\n    for i, deckGuid in pairs(classicSetGUID) do\r\n        if math.random(1,2) == 1 then\r\n            table.insert(cardSetGUID, classicSetGUID[i])\r\n            deck = getObjectFromGUID(legendSetGUID[i])\r\n            getObjectFromGUID(TrashId).putObject(deck)\r\n        else\r\n            table.insert(cardSetGUID, legendSetGUID[i])\r\n            deck = getObjectFromGUID(classicSetGUID[i])\r\n            getObjectFromGUID(TrashId).putObject(deck)\r\n        end\r\n    end\r\n\r\n    playerCountMenu()\r\nend\r\n\r\nfunction soloModeClick(obj, player)\r\n    createBotColorMenu()\r\nend\r\n\r\nfunction botRedClick(obj, player)\r\n  BotColor = \"Red\"\r\n  if Player[BotColor].steam_name ~= nil then\r\n    broadcastToAll(\"That seat is already occupied. Choose a different seat.\", {1, 1, 1})\r\n    return\r\n  end\r\n  SoloGame = true\r\n  createBotDiffScoreMenu(player)\r\nend\r\n\r\nfunction botYellowClick(obj, player)\r\n  BotColor = \"Yellow\"\r\n  if Player[BotColor].steam_name ~= nil then\r\n    broadcastToAll(\"That seat is already occupied. Choose a different seat.\", {1, 1, 1})\r\n    return\r\n  end\r\n  SoloGame = true\r\n  createBotDiffScoreMenu(player)\r\nend\r\n\r\nfunction botGreenClick(obj, player)\r\n  BotColor = \"Green\"\r\n  if Player[BotColor].steam_name ~= nil then\r\n    broadcastToAll(\"That seat is already occupied. Choose a different seat.\", {1, 1, 1})\r\n    return\r\n  end\r\n  SoloGame = true\r\n  createBotDiffScoreMenu(player)\r\nend\r\n\r\nfunction botBlueClick(obj, player)\r\n  BotColor = \"Blue\"\r\n  if Player[BotColor].steam_name ~= nil then\r\n    broadcastToAll(\"That seat is already occupied. Choose a different seat.\", {1, 1, 1})\r\n    return\r\n  end\r\n  SoloGame = true\r\n  createBotDiffScoreMenu(player)\r\nend\r\n\r\nfunction twoPlayersClick()\r\n    playerCount = 2\r\n    dealCount = 6\r\n\r\n    startLuaCoroutine(self, \"setupCo\")\r\nend\r\n\r\nfunction threePlayersClick()\r\n    playerCount = 3\r\n    dealCount = 7\r\n\r\n    startLuaCoroutine(self, \"setupCo\")\r\nend\r\n\r\nfunction fourPlayersClick()\r\n    playerCount = 4\r\n    dealCount = 8\r\n\r\n    startLuaCoroutine(self, \"setupCo\")\r\nend\r\n\r\nfunction startGameClick()\r\n    if SoloGame then\r\n        if playerNationSelectedSafetyCheck() then\r\n          playerCount = 2\r\n          dealCount = 6\r\n          startLuaCoroutine(self, \"setupCo\")\r\n        end\r\n    else\r\n        -- determine player count\r\n        playerCount = #getSeatedPlayersWithHands()\r\n        if playerNationSelectedSafetyCheck() then\r\n            if playerCount <= 2 then\r\n                dealCount = 6\r\n            elseif playerCount == 3 then\r\n                dealCount = 7\r\n            else\r\n                dealCount = 8\r\n            end\r\n            startLuaCoroutine(self, \"setupCo\")\r\n        end\r\n    end\r\nend\r\n\r\nfunction contains(arr, value)\r\n  for _, v in ipairs(arr) do\r\n    if v == value then\r\n      return true\r\n    end\r\n  end\r\n\r\n  return false\r\nend\r\n\r\nfunction removeCardFromDeck(deckGuid, cardGuid)\r\n  local deck = getObjectFromGUID(deckGuid)\r\n  if deck ~= nil then\r\n    local trashBag = getObjectFromGUID(TrashId)\r\n    local params = ({\r\n      guid = cardGuid,\r\n      position = trashBag.getPosition()\r\n    })\r\n\r\n    trashBag.putObject(deck.takeObject(params))\r\n  end\r\nend\r\n\r\nfunction removeNationTributaryCardFromDeck(powerCardGuid)\r\n  local targetGuids = RemoveTributarySetupGUID['_' .. powerCardGuid]\r\n  if targetGuids ~= nil then\r\n    removeCardFromDeck(targetGuids[1], targetGuids[2])\r\n  end\r\nend\r\n\r\nfunction removeSelectedNationFromTributaries()\r\n  for _, player in ipairs(Players) do\r\n    local zone = getObjectFromGUID(PlayerRegionsGUID[player].power)\r\n    for _, obj in ipairs(zone.getObjects()) do\r\n      if obj.type == 'Card' then\r\n        removeNationTributaryCardFromDeck(obj.guid)\r\n      elseif obj.type == 'Deck' then\r\n        for _, card in ipairs(obj.getObjects()) do\r\n          removeNationTributaryCardFromDeck(card.guid)\r\n        end\r\n      end\r\n    end\r\n  end\r\nend\r\n\r\nfunction removeUnselectedNations()\r\n  for _, guid in ipairs(NationPowerCardsGUID) do\r\n    if SelectedNationsGUID[\"_\" .. guid] == nil then\r\n      removeNation(guid)\r\n    end\r\n  end\r\nend\r\n\r\n-- guid is the nation's power card\r\nfunction removeNation(guid)\r\n  local trashBag = getObjectFromGUID(TrashId)\r\n  local card = getObjectFromGUID(guid)\r\n\r\n  if card == nil then\r\n    broadcastToAll(\"Can't remove nation with GUID:\" .. guid .. \". Object not found.\", {1, 0, 0})\r\n    return\r\n  end\r\n\r\n  local cardSet = card.getVar('CardSet')\r\n  for _, v in pairs(cardSet) do\r\n    if type(v) == 'table' then\r\n      for _, w in ipairs(v) do\r\n        trashBag.putObject(getObjectFromGUID(w))\r\n      end\r\n    else\r\n      trashBag.putObject(getObjectFromGUID(v))\r\n    end\r\n  end\r\nend\r\n\r\nfunction setupCo()\r\n    ButtonBoard.destroy()\r\n\r\n    removeSelectedNationFromTributaries()\r\n    removeUnselectedNations()\r\n\r\n    w(0.1)\r\n\r\n    for i, deckGuid in pairs(cardSetGUID) do\r\n        deck = getObjectFromGUID(deckGuid)\r\n        deckContent = deck.getObjects()\r\n        if playerCount == 2 then\r\n            for i, object in ipairs(deckContent) do\r\n                if contains(object.tags, \"P3\") or contains(object.tags, \"P4\") then\r\n                    CardGuid=object.guid\r\n                    local params = {\r\n                        position = getObjectFromGUID(TrashId).getPosition(),\r\n                        guid = CardGuid\r\n                    }\r\n                    getObjectFromGUID(TrashId).putObject(deck.takeObject(params))\r\n                    w(0.1)\r\n                end\r\n            end\r\n        elseif playerCount == 3 then\r\n            for _, object in ipairs(deckContent) do\r\n                if contains(object.tags, \"P4\") then\r\n                    CardGuid=object.guid\r\n                    local params = {\r\n                        position = getObjectFromGUID(TrashId).getPosition(),\r\n                        guid = CardGuid\r\n                    }\r\n                    getObjectFromGUID(TrashId).putObject(deck.takeObject(params))\r\n                    w(0.1)\r\n                end\r\n            end\r\n        end\r\n\r\n        if i < 4 then\r\n            for y=1, dealCount do\r\n                deck.takeObject({\r\n                position          = posDecks[i],\r\n                rotation          = {0.00, 180.00, 180.00},\r\n                smooth            = true,\r\n            })\r\n            deck.setPositionSmooth(posDecks[5])\r\n            end\r\n        elseif i == 4 then --Glory\r\n            deck.setPositionSmooth(posDecks[i])\r\n        elseif i == 5 then --Tributary Deck\r\n            deck.setPositionSmooth(posDecks[5])\r\n            w(2)\r\n            --Shuffles Decks\r\n            zoneObjects = getObjectFromGUID(ShuffleZoneGUID).getObjects()\r\n            for _, object in ipairs(zoneObjects) do\r\n                if object.type == \"Deck\" then\r\n                    object.shuffle()\r\n                end\r\n            end\r\n\r\n            -- Remove appropriate number of fame cards\r\n            deck = getObjectFromGUID(cardSetGUID[4])\r\n            if playerCount == 2 then\r\n              getObjectFromGUID(TrashId).putObject(deck.takeObject())\r\n              getObjectFromGUID(TrashId).putObject(deck.takeObject())\r\n            elseif playerCount == 3 then\r\n              getObjectFromGUID(TrashId).putObject(deck.takeObject())\r\n            end\r\n            w(1)\r\n\r\n            --Set down unrest\r\n            zoneObjects = getObjectFromGUID(UnrestZoneGUID).getObjects()\r\n            for _, object in ipairs(zoneObjects) do\r\n                if object.type == \"Deck\" then\r\n                    object.takeObject({\r\n                        position          = {posDecks[1][1], object.getPosition()[2], object.getPosition()[3]},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                    object.takeObject({\r\n                        position          = {posDecks[2][1], object.getPosition()[2], object.getPosition()[3]},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                    object.takeObject({\r\n                        position          = {-4.75, object.getPosition()[2], object.getPosition()[3]},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                    object.takeObject({\r\n                        position          = {-9.75, object.getPosition()[2], object.getPosition()[3]},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                break\r\n                end\r\n            end\r\n\r\n            w(0.5)\r\n\r\n            --Puts all decks at their appropriate spots\r\n            zoneObjects = getObjectFromGUID(DecksZoneGUID).getObjects()\r\n            for i, object in ipairs(zoneObjects) do\r\n                if object.type == \"Deck\" then\r\n                    object.takeObject({\r\n                        position          = {object.getPosition()[1], object.getPosition()[2] + 0.5, object.getPosition()[3] - 10.5},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                end\r\n            end\r\n\r\n            zoneObjects = getObjectFromGUID(GeneralDeckZoneGUID).getObjects()\r\n            for _, object in ipairs(zoneObjects) do\r\n                if object.type == \"Deck\" then\r\n                    object.takeObject({\r\n                        position          = {object.getPosition()[1] + 2.5, object.getPosition()[2] + 0.5, object.getPosition()[3] - 10.5},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                    object.takeObject({\r\n                        position          = {object.getPosition()[1] - 2.5, object.getPosition()[2] + 0.5, object.getPosition()[3] - 10.5},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                break\r\n                end\r\n            end\r\n\r\n            w(1)\r\n\r\n            -- Place progress at civilized only cards\r\n            zoneObjects = getObjectFromGUID(MarketRowZoneGUID).getObjects()\r\n            local progressTokenBag = getObjectFromGUID(ProgressTokenBagGUID)\r\n            for _, object in ipairs(zoneObjects) do\r\n              if object.type == 'Card' and object.hasTag('Civilized') and not object.hasTag('Uncivilized') then\r\n                local pos = object.getPosition()\r\n                pos[2] = pos[2] + 0.5\r\n                progressTokenBag.takeObject({\r\n                  position = pos,\r\n                  rotation = {0, 180, 0}\r\n                })\r\n              end\r\n            end\r\n        end\r\n    end\r\n\r\n    local notes = \"[u]Scripted Scoring[/u]: Cards left in a player's hand and boxed regions (Draw, Discard, History, Play Area, and Power) will automatically be scored.\" ..\r\n    \" The 'Sumerians' card will not remove 2 'Unrest' cards but will pretend they don't exist for scoring purposes.\"\r\n\r\n    if SoloGame then\r\n      notes = notes .. \"\\n\\n[u]Bot Scoring[/u]: At the end of the game, place the Bot's draw deck and discard into the Bot's 'Play Area' before running the script.\"\r\n\r\n      -- setup solo tokens\r\n      local soloBag = getObjectFromGUID(soloBagGUID)\r\n      for i = 1, #soloTokensGUID do\r\n        soloBag.takeObject({\r\n          guid = soloTokensGUID[i],\r\n          position = posSoloTokens[i],\r\n          rotation = {0, 180, 0}\r\n        })\r\n      end\r\n\r\n      soloBag.takeObject({\r\n        guid = 'e43770',\r\n        rotation = {0, 180, 0}\r\n      }).setPositionSmooth({-36.50, 1.5, 25.00}, false, true)\r\n    end\r\n\r\n    Notes.setNotes(notes)\r\n\r\n    if SoloGame then\r\n      broadcastToAll(\"The rest of the Bot will need to be setup manually.\")\r\n      w(3)\r\n      broadcastToAll(\"Good luck and have fun!\")\r\n    else\r\n      local seatedPlayers = getSeatedPlayersWithHands()\r\n      local firstPlayerIndex = math.random(1, #seatedPlayers)\r\n      local firstPlayer = Player[seatedPlayers[firstPlayerIndex]]\r\n      broadcastToAll(\"The first player will be \" .. firstPlayer.steam_name ..\".\", firstPlayer.color)\r\n    end\r\n\r\n    return 1\r\nend\r\n\r\n\r\nfunction makeItSnappy()\r\n    snapsBoard = {}\r\n    snapX = -75 --0.33\r\n    snapY = 10 -- -0.911 -- -0.966\r\n    snapSpaceX = 5 -- -0.077\r\n    snapSpaceY = -1.2 -- 0.11\r\n\r\n    for i=1, 30 do\r\n        for y=1, 20 do\r\n            table.insert(snapsBoard, {\r\n                position = {snapX+snapSpaceX*i, 1, snapY+snapSpaceY*y},\r\n                rotation = {0, 180, 0},\r\n                rotation_snap = true,\r\n                })\r\n        end\r\n    end\r\n\r\n\r\n    Global.setSnapPoints(snapsBoard)\r\n\r\nend\r\n\r\n\r\nfunction w(some)\r\n    local Time = os.clock() + some\r\n    while os.clock() < Time do\r\n        coroutine.yield(0)\r\n    end\r\nend\r\n\r\n---------------------------------------------------------------------\r\n-- Scripted Scoring and Nation selection code below\r\n---------------------------------------------------------------------\r\nPlayers = {'Red', 'Yellow', 'Green', 'Blue'}\r\nCountableTags = {'Civilized', 'Uncivilized', 'Fame', 'Region', 'Unrest', 'Tributary', 'Metropolis', 'City', 'Star VP'}\r\nCountableInPlayTags = {'Pinned', 'Region', 'Long Walls', 'City', 'Metropolis', 'Pinned Not Region'}\r\nCountableIcons = {'Grain', 'Water', 'Bag'}\r\nCountableEtc = {'Cards'}\r\n\r\nPlayerRegionsGUID = {\r\n  Red = {\r\n    inPlay = '78f83f',\r\n    power = '020c3d',\r\n    deck = 'c473b9',\r\n    history = '020c3d',\r\n    hand = 'fb89a7'\r\n  },\r\n  Yellow = {\r\n    inPlay = '88bfb3',\r\n    power = '65388d',\r\n    deck = 'e5188d',\r\n    history = '65388d',\r\n    hand = '5306fd'\r\n  },\r\n  Green = {\r\n    inPlay = '905fd5',\r\n    power = '6b303e',\r\n    deck = 'ba9afa',\r\n    history = '6b303e',\r\n    hand = 'f718ed'\r\n  },\r\n  Blue = {\r\n    inPlay = 'b50a89',\r\n    power = '30cd0d',\r\n    deck = '634f85',\r\n    history = '3bc4ca',\r\n    hand = '0b6fa9'\r\n  }\r\n}\r\n\r\nPlayerTokensGUID = {\r\n  Red = {\r\n    materials = '7e05ab',\r\n    population = '8fe2e2',\r\n    progress = 'ec04f6'\r\n  },\r\n  Yellow = {\r\n    materials = '2bbd55',\r\n    population = '34adbe',\r\n    progress = '7df2d0'\r\n  },\r\n  Green = {\r\n    materials = '9852a8',\r\n    population = 'b4725a',\r\n    progress = '3253c7'\r\n  },\r\n  Blue = {\r\n    materials = '2b7603',\r\n    population = '5f75ca',\r\n    progress = '5be3e6'\r\n  }\r\n}\r\n\r\n-- [1] = development, [2] = nation deck, [3] = supply, [4] = power, [5] = draw deck\r\nPlayerSetupPos = {\r\n  Red = {{-55.00, 0.98, -17.00}, {-49.00, 0.98, -17.00}, {-43.00, 0.98, -17.00}, {-49.00, 0.98, -24.00}, {-43.00, 0.98, -24.00}},\r\n  Yellow = {{-19.00, 0.98, -17.00}, {-13.00, 0.98, -17.00}, {-7.00, 0.98, -17.00}, {-13.00, 0.98, -24.00}, {-7.00, 0.98, -24.00}},\r\n  Green = {{17.00, 0.98, -17.00}, {23.00, 0.98, -17.00}, {29.00, 0.98, -17.00}, {23.00, 0.98, -24.00}, {29.00, 0.98, -24.00}},\r\n  Blue = {{53.00, 0.98, -17.00}, {59.00, 0.98, -17.00}, {65.00, 0.98, -17.00}, {59.00, 0.98, -24.00}, {65.00, 0.98, -24.00}}\r\n}\r\n\r\nSumeriansCardGUID = '61d69e'\r\nCheckerGUID = '8a0e07'\r\nPlayerTagValues = {}\r\nPlayerInPlayTagValues = {}\r\nSelectedNationsByPlayerGUID = {}\r\nSelectedNationsGUID = {}\r\nSavedPositionsGUID = {}\r\nSoloGame = false\r\nSoloSelectForWho = 0  -- 0 = for player, 1 = for bot\r\n\r\nfunction calculateFinalScore()\r\n  startLuaCoroutine(self, \"calculateFinalScoreCo\")\r\nend\r\n\r\nfunction calculateFinalScoreCo()\r\n  local checkerObj = getObjectFromGUID(CheckerGUID)\r\n  local players = getSeatedPlayersWithHands()\r\n  local playerScore = {}\r\n\r\n  checkerObj.clearButtons()\r\n  broadcastToAll(\"Calculating score...\")\r\n\r\n  -- First need to do a count of all the card categories since some cards will rely on what other players have\r\n  for _, playerColor in ipairs(players) do\r\n    local countedTags = countCardTagsForPlayer(playerColor)\r\n    PlayerTagValues[playerColor] = countedTags.tags\r\n    PlayerInPlayTagValues[playerColor] = countedTags.inPlayTags\r\n\r\n    -- Add resource count into the tags\r\n    PlayerTagValues[playerColor]['Materials'] = getObjectFromGUID(PlayerTokensGUID[playerColor].materials).getVar('count')\r\n    PlayerTagValues[playerColor]['Population'] = getObjectFromGUID(PlayerTokensGUID[playerColor].population).getVar('count')\r\n    PlayerTagValues[playerColor]['Progress'] = getObjectFromGUID(PlayerTokensGUID[playerColor].progress).getVar('count')\r\n  end\r\n\r\n  -- Calculate the final score for all players\r\n  for _, playerColor in ipairs(players) do\r\n    playerScore[playerColor] = calculatePlayerScore(playerColor)\r\n  end\r\n\r\n  createCalculateScoreButton()\r\n\r\n  -- Display score for each player\r\n  local i = 0\r\n  local notes = '[u]**Score**[/u]\\n\\n'\r\n  local sortedScore = {}\r\n  for k, v in pairs(playerScore) do\r\n    table.insert(sortedScore, {color = k, score = v})\r\n  end\r\n\r\n  table.sort(sortedScore, function(a, b) return a.score > b.score end)\r\n\r\n  broadcastToAll(\"** Results **\", {1, 1, 1})\r\n  for k, v in pairs(sortedScore) do\r\n    local lblPlayerName = Player[v.color].steam_name\r\n    local color = Color[Player[v.color].color]:toHex()\r\n\r\n    if lblPlayerName == nil then\r\n      lblPlayerName = 'BOT'\r\n    end\r\n\r\n    notes = notes .. '[' .. color .. ']' .. lblPlayerName .. \"'s score: \" .. v.score .. \" VPs\\n\"\r\n\r\n    broadcastToAll(lblPlayerName .. \"'s score: \" .. v.score .. \" VPs\", Player[v.color].color)\r\n    i = i + 1\r\n  end\r\n  Notes.setNotes(notes)\r\n  return 1\r\nend\r\n\r\nfunction getSeatedPlayersWithHands()\r\n  local seatedPlayers = getSeatedPlayers()\r\n  local result = {}\r\n\r\n  if DEBUG then\r\n    return Players\r\n  end\r\n\r\n  for _, seatedPlayer in ipairs(seatedPlayers) do\r\n    for _, player in ipairs(Players) do\r\n      if seatedPlayer == player then\r\n        table.insert(result, player)\r\n        break\r\n      end\r\n    end\r\n  end\r\n\r\n  if SoloGame then\r\n    table.insert(result, BotColor)\r\n  end\r\n\r\n  return result\r\nend\r\n\r\nfunction getIfInHistory(player, objGUID)\r\n  local zone = getObjectFromGUID(PlayerRegionsGUID[player].history)\r\n  for _, obj in zone.getObjects() do\r\n    if obj.getGUID() == objGUID then\r\n      return true\r\n    end\r\n\r\n    if obj.type == 'Deck' then\r\n      for _, card in obj.getObjects() do\r\n        if card.getGUID() == objGUID then\r\n          return true;\r\n        end\r\n      end\r\n    end\r\n  end\r\n\r\n  return false\r\nend\r\n\r\nfunction getIfGarrisoned(player, obj, cardGuid)\r\n  if not getIfInPlayZone(player, obj) then\r\n    return false\r\n  end\r\n\r\n  -- Handle special case scenario if the card in question might be in a stack\r\n  if obj.type == 'Deck' and not obj.is_face_down then\r\n    local cards = obj.getObjects()\r\n    if cards[#cards].guid ~= cardGuid then\r\n      return true\r\n    end\r\n  end\r\n\r\n  local castPos = obj.getPosition()\r\n  castPos[2] = castPos[2] + 0.03\r\n  local hits = Physics.cast({\r\n    origin        = castPos,\r\n    direction     = {0, 1, 0},\r\n    type          = 1,\r\n    max_distance  = 0.5,\r\n  })\r\n\r\n  for _, hit in pairs(hits) do\r\n    if hit.hit_object.guid ~= obj.guid then\r\n      return true\r\n    end\r\n  end\r\n\r\n  return false\r\nend\r\n\r\nfunction getIfInPlayZone(player, obj)\r\n  local zones = obj.getZones()\r\n  for _, zone in pairs(zones) do\r\n    if zone.guid == PlayerRegionsGUID[player].inPlay then\r\n      return true\r\n    end\r\n  end\r\n\r\n  return false\r\nend\r\n\r\nfunction createCalculateScoreButton()\r\n  local checker = getObjectFromGUID(CheckerGUID)\r\n  if checker == nil then\r\n    return\r\n  end\r\n  checker.setLuaScript('')\r\n  checker.createButton({\r\n    click_function = \"calculateFinalScore\",\r\n    function_owner = Global,\r\n    label          = \"Calculate Score\",\r\n    position       = {0, 0.5, 0},\r\n    rotation       = {0, 0, 0},\r\n    width          = 2500,\r\n    height         = 400,\r\n    font_size      = 300,\r\n    tooltip        = '',\r\n  })\r\nend\r\n\r\nfunction countCardTagsForPlayer(playerColor)\r\n  local countedTags = {}\r\n  local countedInPlayTags = {}\r\n\r\n  hasSumerians = false\r\n\r\n  -- init empty table\r\n  for _, tag in ipairs(CountableTags) do\r\n    countedTags[tag] = 0\r\n  end\r\n  for _, tag in ipairs(CountableIcons) do\r\n    countedTags[tag] = 0\r\n  end\r\n  for _, tag in ipairs(CountableEtc) do\r\n    countedTags[tag] = 0\r\n  end\r\n  for _, tag in ipairs(CountableInPlayTags) do\r\n    countedInPlayTags[tag] = 0\r\n  end\r\n\r\n  for _, zoneGUID in pairs(PlayerRegionsGUID[playerColor]) do\r\n    countCardTagsAtZone(playerColor, getObjectFromGUID(zoneGUID), countedTags, countedInPlayTags)\r\n  end\r\n\r\n  if hasSumerians then\r\n    countedTags['Unrest'] = math.max(0, countedTags['Unrest'] - 2)\r\n  end\r\n\r\n  return {\r\n    tags = countedTags,\r\n    inPlayTags = countedInPlayTags\r\n  }\r\nend\r\n\r\n-- Extra tags are tags that appear more than once on the card\r\nfunction addExtraTags(obj, count)\r\n  local tags = obj.getVar('ExtraTags')\r\n  for k, v in pairs(tags) do\r\n    if count[k] ~= nil then\r\n      count[k] = count[k] + v\r\n    end\r\n  end\r\nend\r\n\r\nfunction countCardTagsAtZone(player, zone, countedTags, countedInPlayTags)\r\n  local inPlayZone = zone.guid == PlayerRegionsGUID[player].inPlay\r\n\r\n  for _, obj in ipairs(zone.getObjects()) do\r\n    if obj.type == \"Card\" then\r\n      local inPlay = inPlayZone and not getIfGarrisoned(player, obj, obj.guid)\r\n      -- Count main tags\r\n      for _, tag in ipairs(obj.getTags()) do\r\n        if countedTags[tag] ~= nil then\r\n          countedTags[tag] = countedTags[tag] + 1\r\n        end\r\n\r\n        if inPlay and countedInPlayTags[tag] ~= nil then\r\n          countedInPlayTags[tag] = countedInPlayTags[tag] + 1\r\n        end\r\n\r\n        if tag == 'Extra Tags' then\r\n          addExtraTags(obj, countedTags)\r\n          if inPlay then\r\n            addExtraTags(obj, countedInPlayTags)\r\n          end\r\n        end\r\n      end\r\n\r\n      -- Special conditional tag\r\n      if inPlay and obj.hasTag('Pinned') and not obj.hasTag('Region') then\r\n        countedInPlayTags['Pinned Not Region'] = countedInPlayTags['Pinned Not Region'] + 1\r\n      end\r\n\r\n      -- Count the icons on the cards\r\n      for _, icon in ipairs(CountableIcons) do\r\n        local val = obj.getVar(icon)\r\n        if val ~= nil then\r\n          countedTags[icon] = countedTags[icon] + val\r\n        end\r\n      end\r\n\r\n      countedTags['Cards'] = countedTags['Cards'] + 1\r\n      if obj.guid == SumeriansCardGUID then\r\n        hasSumerians = true\r\n      end\r\n\r\n    -- Cards in a deck are stored as tables, need to do some wierd stuff to get the correct values\r\n    elseif obj.type == \"Deck\" then\r\n      local checkerObj = getObjectFromGUID(CheckerGUID)\r\n      local inPlay = false\r\n\r\n      for _, card in ipairs(obj.getObjects()) do\r\n        for _, tag in ipairs(card.tags) do\r\n          if countedTags[tag] ~= nil then\r\n            countedTags[tag] = countedTags[tag] + 1\r\n          end\r\n\r\n          -- Last card, count tags if its inplay\r\n          if inPlayZone and card.index == obj.getQuantity() - 1 and not getIfGarrisoned(player, obj, card.guid) and countedInPlayTags[tag] ~= nil then\r\n            inPlay = true\r\n            countedInPlayTags[tag] = countedInPlayTags[tag] + 1\r\n          end\r\n        end\r\n\r\n        checkerObj.setLuaScript(card.lua_script)\r\n        checkerObj.setTags(card.tags)\r\n        checkerObj = checkerObj.reload()\r\n        w(0.005) -- Don't know what the minimum time is until an object is created\r\n        for _, icon in ipairs(CountableIcons) do\r\n          local val = checkerObj.getVar(icon)\r\n          if val ~= nil then\r\n            countedTags[icon] = countedTags[icon] + val\r\n          end\r\n        end\r\n\r\n        if checkerObj.hasTag('Extra Tags') then\r\n          addExtraTags(checkerObj, countedTags)\r\n          if inPlay then\r\n            addExtraTags(checkerObj, countedInPlayTags)\r\n          end\r\n        end\r\n\r\n        if inPlay and checkerObj.hasTag('Pinned') and not checkerObj.hasTag('Region') then\r\n          countedInPlayTags['Pinned Not Region'] = countedInPlayTags['Pinned Not Region'] + 1\r\n        end\r\n\r\n        if card.guid == SumeriansCardGUID then\r\n          hasSumerians = true\r\n        end\r\n      end\r\n\r\n      countedTags['Cards'] = countedTags['Cards'] + obj.getQuantity()\r\n    end\r\n  end\r\nend\r\n\r\nfunction calculatePlayerScore(player)\r\n  local score = 0\r\n\r\n  for _, zoneGUID in pairs(PlayerRegionsGUID[player]) do\r\n    score = score + scoreCardsAtZone(player, getObjectFromGUID(zoneGUID))\r\n  end\r\n\r\n  score = score + PlayerTagValues[player].Unrest * -2\r\n  score = score + getObjectFromGUID(PlayerTokensGUID[player].progress).getVar('count')\r\n\r\n  if SoloGame and player == BotColor then\r\n    local materials = getObjectFromGUID(PlayerTokensGUID[player].materials).getVar('count')\r\n    local population = getObjectFromGUID(PlayerTokensGUID[player].population).getVar('count')\r\n    if BotScoreType == 1 then\r\n      score = score + math.floor(materials / 10)\r\n      score = score + math.floor(population / 10)\r\n    elseif BotScoreType == 2 then\r\n      score = score + math.floor(materials / 5)\r\n      score = score + math.floor(population / 5)\r\n    end\r\n  end\r\n\r\n  return score\r\nend\r\n\r\nfunction scoreCardsAtZone(player, zone)\r\n  local score = 0\r\n  local checkerObj = getObjectFromGUID(CheckerGUID)\r\n\r\n  local inHistory = zone.guid == PlayerRegionsGUID[player].history\r\n  local inPlayArea = zone.guid == PlayerRegionsGUID[player].inPlay\r\n\r\n  for _, obj in ipairs(zone.getObjects()) do\r\n    if obj.type == 'Card' then\r\n\r\n      local objParams = {\r\n        inHistory = inHistory,\r\n        inGarrison = false,\r\n        inPlay = false,\r\n        isFaceDown = obj.is_face_down\r\n      }\r\n\r\n      if inPlayArea then\r\n        objParams.inGarrison = getIfGarrisoned(player, obj, obj.guid)\r\n        objParams.inPlay = not objParams.inGarrison\r\n      end\r\n\r\n      local cardValue = scoreObj(obj, player, obj.guid, objParams)\r\n      --obj.setDescription(\"VPs earned: \" .. cardValue)\r\n      score = score + cardValue\r\n\r\n    elseif obj.type == 'Deck' then\r\n      for _, card in ipairs(obj.getObjects()) do\r\n        checkerObj.setName(card.name)\r\n        checkerObj.setLuaScript(card.lua_script)\r\n        checkerObj.setTags(card.tags)\r\n        checkerObj = checkerObj.reload()\r\n        w(0.005)\r\n        local objParams = {\r\n          inHistory = inHistory,\r\n          isFaceDown = obj.is_face_down,\r\n          deckObj = obj\r\n        }\r\n\r\n        if inPlayArea then\r\n          objParams.inGarrison = getIfGarrisoned(player, obj, card.guid)\r\n          objParams.inPlay = not objParams.inGarrison\r\n        end\r\n\r\n        local cardValue = scoreObj(checkerObj, player, card.guid, objParams)\r\n        --card.description = \"VPs earned: \" .. cardValue\r\n        score = score + cardValue\r\n      end\r\n    end\r\n  end\r\n\r\n  checkerObj.setName(\"\")\r\n\r\n  return score\r\nend\r\n\r\n-- Concatenates table2 into table1\r\nfunction concatTable(table1, table2)\r\n  for k, v in pairs(table2) do\r\n    table1[k] = v\r\n  end\r\nend\r\n\r\n-- Call the obj's getVP function. The origGUID is the GUID of the original object\r\n-- since the object itself might be the placeholder object if the original object\r\n-- is in a container\r\nfunction scoreObj(obj, player, origGUID, objParams)\r\n  local status = false\r\n  local result = nil\r\n\r\n  -- Bot has special scoring rules\r\n  if SoloGame and BotColor == player then\r\n    if obj.hasTag('X VP') then\r\n      status, result = pcall(getVP, obj)\r\n    elseif obj.hasTag('Question VP') then\r\n      status, result = pcall(getBotVP, obj)\r\n    elseif obj.hasTag('Star VP') then\r\n      status = true\r\n      result = 5\r\n    else\r\n      return 0\r\n    end\r\n\r\n    if not status or result == nil then\r\n      local msg = 'ERROR: Failed scoring card \"' .. obj.getName() .. '\" (guid:' .. origGUID .. ') for ' .. player\r\n      broadcastToAll(msg, {1, 0, 0})\r\n      return 0\r\n    end\r\n\r\n    return result\r\n  end\r\n\r\n  local params = {\r\n    obj = obj,\r\n    cardGUID = origGUID,\r\n    player = player,\r\n  }\r\n\r\n  concatTable(params, objParams)\r\n\r\n  -- If not null, it the object is a card in the deck\r\n  if objParams.deckObj ~= nil then\r\n    params.obj = objParams.deckObj\r\n  end\r\n\r\n  if obj.hasTag('X VP') or obj.hasTag('Question VP') or obj.hasTag('Star VP') then\r\n    status, result = pcall(getVP, obj, params)\r\n    -- Sometimes status returns true when result is nil for some reason\r\n    if not status or result == nil then\r\n      local msg = 'ERROR: Failed scoring card \"' .. obj.getName() .. '\" (guid:' .. origGUID .. ') for ' .. player\r\n      broadcastToAll(msg, {1, 0, 0})\r\n      log(msg)\r\n      return 0\r\n    end\r\n  else\r\n    return 0\r\n  end\r\n\r\n  if obj.hasTag('Star VP') then\r\n    result = math.min(result, 10)\r\n  end\r\n\r\n  return result\r\nend\r\n\r\nfunction getVP(obj, params)\r\n  return obj.call('getVP', params)\r\nend\r\n\r\nfunction getBotVP(obj)\r\n  return obj.call('getBotVP')\r\nend\r\n\r\nfunction getTagValue(params)\r\n  local tags = PlayerTagValues[params.player]\r\n  if tags == nil then\r\n    return nil\r\n  end\r\n\r\n  return tags[params.name]\r\nend\r\n\r\nfunction getInPlayTagValue(params)\r\n  local tags = PlayerInPlayTagValues[params.player]\r\n  if tags == nil then\r\n    return nil\r\n  end\r\n\r\n  return tags[params.name]\r\nend\r\n\r\nfunction getOtherUnrestTotal(params)\r\n  local sum = 0\r\n  for _, playerColor in ipairs(Players) do\r\n    if params.player ~= playerColor then\r\n      local val = getTagValue({\r\n        player = playerColor,\r\n        name = \"Unrest\"\r\n      })\r\n\r\n      if val ~= nil then\r\n        sum = sum + val\r\n      end\r\n    end\r\n  end\r\n  return sum\r\nend\r\n\r\nfunction countCardsInZone(zone)\r\n  local sum = 0\r\n    for _, obj in ipairs(zone.getObjects()) do\r\n      if obj.type == 'Card' then\r\n        sum = sum + 1\r\n      elseif obj.type == 'Deck' then\r\n        sum = sum + obj.getQuantity()\r\n      end\r\n    end\r\n  return sum\r\nend\r\n\r\nfunction getHistoryCardCount(params)\r\n  return countCardsInZone(getObjectFromGUID(PlayerRegionsGUID[params.player].history))\r\nend\r\n\r\nfunction getExileCardCount(params)\r\n  return countCardsInZone(getObjectFromGUID(ExileZoneGUID))\r\nend\r\n\r\nfunction getGarrisonCount(params)\r\n  if not getIfInPlayZone(params.player, params.obj) then\r\n    return 0\r\n  end\r\n\r\n  local n = countCardsUnderThis(params.player, params.obj, 0)\r\n  return n\r\nend\r\n\r\nfunction countCardsUnderThis(player, obj, n)\r\n  local count = 0\r\n\r\n  -- failsafe for inf recursion\r\n  if n > 10 then\r\n    return 0\r\n  end\r\n\r\n  if obj.type == 'Card' then\r\n    count = 1\r\n  elseif obj.type == 'Deck' then\r\n    count = obj.getQuantity()\r\n  else\r\n    return 0\r\n  end\r\n\r\n  -- Dont count the card itself if at top level\r\n  if n == 0 then\r\n    count = count - 1\r\n  end\r\n\r\n  -- Check if there is a card or deck underneath\r\n  local hits = Physics.cast({\r\n    origin        = obj.getPosition(),\r\n    direction     = {0, -1, 0},\r\n    type          = 1,\r\n    max_distance  = 0.25\r\n  })\r\n\r\n  for _, hit in ipairs(hits) do\r\n    if hit.hit_object.guid ~= obj.guid then\r\n      count = count + countCardsUnderThis(player, hit.hit_object, n + 1)\r\n      break\r\n    end\r\n  end\r\n\r\n  return count\r\nend\r\n\r\nfunction createNationSetupButtons()\r\n  for _, guid in ipairs(NationPowerCardsGUID) do\r\n    getObjectFromGUID(guid).hide_when_face_down = false\r\n    createNationSetupButton(guid)\r\n  end\r\nend\r\n\r\nfunction createNationSetupButton(guid)\r\n  local card = getObjectFromGUID(guid)\r\n  card.clearButtons()\r\n\r\n  -- If nation already selected, don't create buttons\r\n  if SelectedNationsGUID[\"_\" .. guid] ~= nil then\r\n    return\r\n  end\r\n\r\n  if not card.is_face_down then\r\n      card.createButton({\r\n        click_function = \"nationSetupClick\",\r\n        function_owner = Global,\r\n        label = \"Select \" .. card.GetName(),\r\n        position = {0, 0.5, 2},\r\n        width = 1500,\r\n        height = 250,\r\n        font_size = 150,\r\n      })\r\n  else\r\n      card.createButton({\r\n        click_function = \"nationSetupClick\",\r\n        function_owner = Global,\r\n        label = \"Select \" .. card.GetName(),\r\n        position = {0, -0.5, 2},\r\n        rotation = {0, 0, 180},\r\n        width = 1500,\r\n        height = 250,\r\n        font_size = 150,\r\n      })\r\n  end\r\nend\r\n\r\nfunction nationSetupClick(obj, playerColor, altClick)\r\n  if Player[playerColor].getHandCount() == 0 then\r\n    broadcastToColor('Please take a seat before you select a nation.', playerColor)\r\n    return\r\n  end\r\n\r\n  local cardSet = obj.getVar('CardSet')\r\n\r\n  if cardSet == nil then\r\n    broadcastToAll(obj.getName() .. \" missing Card set values\", {1, 0, 0})\r\n    return\r\n  end\r\n\r\n  if SoloGame and SoloSelectForWho == 1 then\r\n    playerColor = BotColor\r\n  end\r\n\r\n  -- Return previous selected nation cards if it exists\r\n  if SelectedNationsByPlayerGUID[playerColor] ~= nil then\r\n    local card = getObjectFromGUID(SelectedNationsByPlayerGUID[playerColor])\r\n    local prevCardSet = card.getVar('CardSet')\r\n\r\n    for _, v in pairs(prevCardSet) do\r\n      if type(v) == 'table' then\r\n        for _, w in ipairs(v) do\r\n          local cards = getObjectFromGUID(w)\r\n          if cards ~= nil then\r\n              cards.setPositionSmooth(SavedPositionsGUID[\"_\" .. w], false, true)\r\n              cards.setLock(true)\r\n          end\r\n        end\r\n      else\r\n        local cards = getObjectFromGUID(v)\r\n        if cards ~= nil then\r\n            cards.setPositionSmooth(SavedPositionsGUID[\"_\" .. v], false, true)\r\n            cards.setLock(true)\r\n        end\r\n      end\r\n    end\r\n\r\n    SelectedNationsGUID[\"_\" .. card.guid] = nil\r\n    createNationSetupButton(prevCardSet.power)\r\n  end\r\n\r\n  SelectedNationsByPlayerGUID[playerColor] = obj.getGUID()\r\n  SelectedNationsGUID[\"_\" .. obj.getGUID()] = true\r\n\r\n  -- Save positions of the newly selected nation cards\r\n  for _, v in pairs(cardSet) do\r\n    if type(v) == 'table' then\r\n      for _, guid in ipairs(v) do\r\n        local cards = getObjectFromGUID(guid)\r\n        if cards ~= nil then\r\n            SavedPositionsGUID[\"_\" .. guid] = cards.getPosition()\r\n        end\r\n      end\r\n    else\r\n        local cards = getObjectFromGUID(v)\r\n        if cards ~= nil then\r\n            SavedPositionsGUID[\"_\" .. v] = getObjectFromGUID(v).getPosition()\r\n        end\r\n    end\r\n  end\r\n\r\n  -- Move cards into player's region\r\n  moveNationCards(playerColor, 1, cardSet.development)\r\n  moveNationCards(playerColor, 2, cardSet.nation)\r\n  moveNationCards(playerColor, 3, cardSet.supply)\r\n  moveNationCards(playerColor, 4, cardSet.power)\r\n  moveNationCards(playerColor, 5, cardSet.deck)\r\n  moveNationCards(playerColor, 0, cardSet.etc)\r\n\r\n  if SoloSelectForWho == nil then\r\n    SoloSelectForWho = 0\r\n  end\r\n\r\n  if SoloGame then\r\n    SoloSelectForWho = (SoloSelectForWho + 1) % 2\r\n    if SoloSelectForWho == 1 then\r\n      broadcastToAll(\"The next nation you select will be for the Bot.\", {1, 1, 1})\r\n    end\r\n  end\r\n\r\n  obj.clearButtons()\r\nend\r\n\r\nfunction moveNationCards(playerColor, setupPosIndex, guid)\r\n  if guid == nil then\r\n    return\r\n  end\r\n\r\n  -- ETC cards\r\n  if setupPosIndex < 1 then\r\n    local pos = PlayerSetupPos[playerColor][4]\r\n    local cards = getObjectFromGUID(guid)\r\n    if cards ~= nil then\r\n        cards.setPositionSmooth({pos[1] - 12, pos[2], pos[3]}, false, true)\r\n        cards.setLock(false)\r\n    end\r\n    return\r\n  end\r\n\r\n  if type(guid) == 'table' then\r\n    for i, v in ipairs(guid) do\r\n      local pos = PlayerSetupPos[playerColor][setupPosIndex]\r\n      local cards = getObjectFromGUID(v)\r\n      if cards ~= nil then\r\n          cards.setPositionSmooth({pos[1], pos[2] + (i - 1) * 0.2, pos[3]}, false, true)\r\n          cards.setLock(false)\r\n          if i == 2 then\r\n            cards.shuffle()\r\n          end\r\n      end\r\n    end\r\n  else\r\n    local cards = getObjectFromGUID(guid)\r\n    if cards ~= nil then\r\n        cards.setPositionSmooth(PlayerSetupPos[playerColor][setupPosIndex], false, true)\r\n        cards.setLock(false)\r\n        if setupPosIndex == 5 then\r\n          cards.shuffle()\r\n        end\r\n    end\r\n  end\r\nend\r\n",
+  "LuaScript": "--Imperium Legends\r\nDEBUG = false\r\n\r\nNationPowerCardsGUID = {'b8bedc', 'c82b68', 'f16b2d', 'ce64db', '489f4f', '41ec0d', 'a3fb54', '69a1cb',\r\n  'c6650c', '626f05', '963ad9', '2cf524', '1031e5', 'c38eb7', 'b26040', 'afdd2a'}\r\n\r\n-- key is the power card's GUID with an underscore prepended to it, value is table with [1] = deck's GUID and [2] = tributary card's GUID\r\nRemoveTributarySetupGUID = {\r\n  _f16b2d = {'8d6d65', '9c7dbe'},     -- Egyptians\r\n  _ce64db = {'8d6d65', '1dd8d0'},     -- Olmecs\r\n  _489f4f = {'8d6d65', '112d66'},     -- Mauryans\r\n  _41ec0d = {'8d6d65', 'ee8157'},     -- Qin\r\n  _69a1cb = {'8d6d65', 'e81969'},     -- Minoans\r\n  _b26040 = {'7b35e0', 'a456f3'},     -- Persians\r\n  _afdd2a = {'7b35e0', 'dd5f20'},     -- Macedonians\r\n  _c38eb7 = {'7b35e0', '042935'},     -- Vikings\r\n  _1031e5 = {'7b35e0', '7cc86d'},     -- Carthaginians\r\n  _2cf524 = {'7b35e0', '2ece0a'},     -- Scythians\r\n  _963ad9 = {'7b35e0', '7a2282'},     -- Celts\r\n  _c6650c = {'7b35e0', '026516'},     -- Greeks\r\n  _626f05 = {'7b35e0', '2f2fd6'}      -- Romans\r\n}\r\n\r\n--last ID is first deck\r\nlegendSetGUID = {'04efdc', '26dcbf', 'b84281', 'f780f6', '7b35e0'}\r\nclassicSetGUID = {'6cf53b', '01dca8', 'ce5f4b', 'bd536f', '8d6d65'}\r\nunrestDeckGUID = '10863e'\r\n\r\nButtonBoardGUID = '5f50b8'\r\nTrashId = \"a4e45c\"\r\nShuffleZoneGUID = \"0e7481\"\r\nUnrestZoneGUID = \"c5991e\"\r\nDecksZoneGUID = \"5be833\"\r\nGeneralDeckZoneGUID = \"61f3d2\"\r\nExileZoneGUID = \"3c8e06\"\r\nMarketRowZoneGUID = \"10e29b\"\r\n\r\nProgressTokenBagGUID = \"8a580b\"\r\n\r\nposDecks = {{1.25, 0.98, 31.75},\r\n            {7.25, 0.98, 31.75},\r\n            {13.25, 0.98, 31.75},\r\n            {19.25, 0.98, 31.75},\r\n            {-7.25, 0.98, 31.75}}\r\n\r\nposSoloTokens = {\r\n  {-16.25, 1.69, 17.25},\r\n  {-9.75, 1.11, 17.25},\r\n  {-4.75, 1.11, 17.25},\r\n  {1.25, 1.11, 17.25},\r\n  {7.25, 1.11, 17.25},\r\n  {13.25, 1.11, 17.25},\r\n  {19.25, 1.11, 17.25}\r\n}\r\n\r\nsoloBagGUID = '4d7d45'\r\nsoloTokensGUID = {'7a208f', 'db4ee5', '01312b', '8a05bc', '97f6ec', '9b98ef', '328e96'}\r\n\r\nfunction nullFunc()\r\nend\r\n\r\nfunction onSave()\r\n  local state = {}\r\n  state.SelectedNationsByPlayerGUID = SelectedNationsByPlayerGUID\r\n  state.SelectedNationsGUID = SelectedNationsGUID\r\n  state.SavedPositionsGUID = SavedPositionsGUID\r\n  state.SoloGame = SoloGame\r\n  state.BotColor = BotColor\r\n  state.BotScoreType = BotScoreType\r\n  state.SoloSelectForWho = SoloSelectForWho\r\n  return JSON.encode(state)\r\nend\r\n\r\nfunction onLoad(save_data)\r\n    if save_data ~= \"\" then\r\n        data = JSON.decode(save_data)\r\n        SelectedNationsByPlayerGUID = data.SelectedNationsByPlayerGUID\r\n        SelectedNationsGUID = data.SelectedNationsGUID\r\n        SavedPositionsGUID = data.SavedPositionsGUID\r\n        SoloGame = data.SoloGame\r\n        BotColor = data.BotColor\r\n        BotScoreType = data.BotScoreType\r\n        SoloSelectForWho = data.SoloSelectForWho\r\n    end\r\n\r\n    math.randomseed(os.time())\r\n\r\n    ButtonBoard = getObjectFromGUID(ButtonBoardGUID)\r\n\r\n    --createRecallButtons()\r\n    --createCalculateScoreButton()\r\nend\r\n\r\nfunction playerCountMenu()\r\n    ButtonBoard.clearButtons()\r\n    ButtonBoard.createButton({\r\n        click_function = \"nullFunc\",\r\n        function_owner = Global,\r\n        label          = \"Which game mode?\",\r\n        position       = {0, 0.4, -3},\r\n        width          = 0,\r\n        height         = 0,\r\n        font_size      = 250,\r\n        font_color     = \"White\",\r\n    })\r\n\r\n    ButtonBoard.createButton({\r\n        click_function = \"soloModeClick\",\r\n        function_owner = Global,\r\n        label          = 'Solo',\r\n        position       = {0, 0.4, -1},\r\n        rotation       = {0, 0, 0},\r\n        width          = 1400,\r\n        height         = 400,\r\n        font_size      = 175,\r\n        tooltip        = '',\r\n    })\r\n\r\n    ButtonBoard.createButton({\r\n        click_function = \"normalModeClick\",\r\n        function_owner = Global,\r\n        label          = 'Normal',\r\n        position       = {0, 0.4, 1},\r\n        rotation       = {0, 0, 0},\r\n        width          = 1400,\r\n        height         = 400,\r\n        font_size      = 175,\r\n        tooltip        = '',\r\n    })\r\nend\r\n\r\nfunction normalModeClick()\r\n    ButtonBoard.clearButtons()\r\n    ButtonBoard.createButton({\r\n        click_function = \"nullFunc\",\r\n        function_owner = Global,\r\n        label          = \"Please select a nation before\\nstarting the game.\",\r\n        position       = {0, 0.4, -3},\r\n        width          = 0,\r\n        height         = 0,\r\n        font_size      = 250,\r\n        font_color     = \"White\",\r\n    })\r\n\r\n    ButtonBoard.createButton({\r\n        click_function = \"startGameClick\",\r\n        function_owner = Global,\r\n        label          = 'Start Game',\r\n        position       = {0, 0.4, 0},\r\n        width          = 1400,\r\n        height         = 400,\r\n        font_size      = 175,\r\n        tooltip        = '',\r\n    })\r\nend\r\n\r\nfunction createBotColorMenu()\r\n  local y = -1.5\r\n  local offset = 1.2\r\n  ButtonBoard.clearButtons()\r\n  ButtonBoard.createButton({\r\n      click_function = \"nullFunc\",\r\n      function_owner = Global,\r\n      label          = \"Which player will be the BOT?\",\r\n      position       = {0, 0.4, -3},\r\n      width          = 0,\r\n      height         = 0,\r\n      font_color     = \"White\",\r\n      font_size      = 250,\r\n  })\r\n  ButtonBoard.createButton({\r\n      click_function = \"botRedClick\",\r\n      function_owner = Global,\r\n      position       = {0, 0.4, y},\r\n      width          = 1200,\r\n      height         = 400,\r\n      font_size      = 250,\r\n      color          = \"Red\",\r\n      label          = \"Red\"\r\n  })\r\n  ButtonBoard.createButton({\r\n      click_function = \"botYellowClick\",\r\n      function_owner = Global,\r\n      position       = {0, 0.4, y + offset},\r\n      width          = 1200,\r\n      height         = 400,\r\n      font_size      = 250,\r\n      color          = \"Yellow\",\r\n      label          = \"Yellow\"\r\n  })\r\n  ButtonBoard.createButton({\r\n      click_function = \"botGreenClick\",\r\n      function_owner = Global,\r\n      position       = {0, 0.4, y + offset * 2},\r\n      width          = 1200,\r\n      height         = 400,\r\n      font_size      = 250,\r\n      color          = \"Green\",\r\n      label          = \"Green\"\r\n  })\r\n  ButtonBoard.createButton({\r\n      click_function = \"botBlueClick\",\r\n      function_owner = Global,\r\n      position       = {0, 0.4, y + offset * 3},\r\n      width          = 1200,\r\n      height         = 400,\r\n      font_size      = 250,\r\n      color          = \"Blue\",\r\n      label          = \"Blue\"\r\n  })\r\nend\r\n\r\nfunction createBotDiffScoreMenu(player)\r\n  -- Check if player already selected nation. If so, set to bot select\r\n  if SelectedNationsByPlayerGUID[player] ~= nil then\r\n    SoloSelectForWho = 1\r\n    broadcastToAll(\"The next nation you select will be for the Bot.\")\r\n  end\r\n\r\n  ButtonBoard.clearButtons()\r\n  ButtonBoard.createButton({\r\n      click_function = \"nullFunc\",\r\n      function_owner = Global,\r\n      label          = \"Select Bot Difficulty for Scoring\",\r\n      position       = {0, 0.4, -3},\r\n      width          = 0,\r\n      height         = 0,\r\n      font_color     = \"White\",\r\n      font_size      = 250,\r\n  })\r\n  ButtonBoard.createButton({\r\n      click_function = \"botScoreDiff1Click\",\r\n      function_owner = Global,\r\n      position       = {0, 0.4, -1},\r\n      width          = 3500,\r\n      height         = 400,\r\n      font_size      = 250,\r\n      label          = \"Chieftain / Warlord / Imperator\"\r\n  })\r\n  ButtonBoard.createButton({\r\n      click_function = \"botScoreDiff2Click\",\r\n      function_owner = Global,\r\n      position       = {0, 0.4, 1},\r\n      width          = 3500,\r\n      height         = 400,\r\n      font_size      = 250,\r\n      label          = \"Sovereign / Overlord\"\r\n  })\r\nend\r\n\r\nfunction botScoreDiff1Click()\r\n    BotScoreType = 1\r\n    createSoloStartMenu()\r\nend\r\n\r\nfunction botScoreDiff2Click()\r\n    BotScoreType = 2\r\n    createSoloStartMenu()\r\nend\r\n\r\nfunction createSoloStartMenu()\r\n    ButtonBoard.clearButtons()\r\n\r\n    ButtonBoard.createButton({\r\n        click_function = \"nullFunc\",\r\n        function_owner = Global,\r\n        label          = \"Please select a nation for you\\nand the Bot before starting\\nthe game.\",\r\n        position       = {0, 0.4, -2.75},\r\n        width          = 0,\r\n        height         = 0,\r\n        font_size      = 250,\r\n        font_color     = \"White\",\r\n    })\r\n\r\n    ButtonBoard.createButton({\r\n        click_function = \"startGameClick\",\r\n        function_owner = Global,\r\n        label          = 'Start Game',\r\n        position       = {0, 0.4, 0},\r\n        width          = 1400,\r\n        height         = 400,\r\n        font_size      = 175,\r\n        tooltip        = '',\r\n    })\r\nend\r\n\r\n-- If there are enough players with selected nations, returns true\r\nfunction playerNationSelectedSafetyCheck()\r\n    local unreadyPlayers = {}\r\n    local players = getSeatedPlayersWithHands()\r\n\r\n    if SoloGame then\r\n      playerCount = 2\r\n    end\r\n\r\n    for _, player in ipairs(players) do\r\n      -- Check to see if selected nation\r\n      if SelectedNationsByPlayerGUID[player] == nil then\r\n        table.insert(unreadyPlayers, player)\r\n\r\n        local name = Player[player].steam_name\r\n        if SoloGame and player == BotColor then\r\n          name = \"BOT\"\r\n          broadcastToAll(\"Please select a nation for the \" .. BotColor .. \" Bot.\", Player[player].color)\r\n        else\r\n          if name == nil then\r\n            name = player\r\n          end\r\n          broadcastToAll(name .. \" needs to select a nation before the game can start.\", Player[player].color)\r\n        end\r\n      end\r\n    end\r\n\r\n    return #players - #unreadyPlayers >= playerCount\r\nend\r\n\r\nfunction CloseMenu()\r\n    ButtonBoard.destroy()\r\nend\r\n\r\nfunction setupClassic()\r\n    cardSetGUID = classicSetGUID\r\n    for _, deckGuid in pairs(legendSetGUID) do\r\n        deck = getObjectFromGUID(deckGuid)\r\n        getObjectFromGUID(TrashId).putObject(deck)\r\n    end\r\n\r\n    playerCountMenu()\r\nend\r\n\r\nfunction setupImperium()\r\n    cardSetGUID = legendSetGUID\r\n    for _, deckGuid in pairs(classicSetGUID) do\r\n        deck = getObjectFromGUID(deckGuid)\r\n        getObjectFromGUID(TrashId).putObject(deck)\r\n    end\r\n\r\n    playerCountMenu()\r\nend\r\n\r\nfunction setupMix()\r\n    cardSetGUID = {}\r\n\r\n    for i, deckGuid in pairs(classicSetGUID) do\r\n        if math.random(1,2) == 1 then\r\n            table.insert(cardSetGUID, classicSetGUID[i])\r\n            deck = getObjectFromGUID(legendSetGUID[i])\r\n            getObjectFromGUID(TrashId).putObject(deck)\r\n        else\r\n            table.insert(cardSetGUID, legendSetGUID[i])\r\n            deck = getObjectFromGUID(classicSetGUID[i])\r\n            getObjectFromGUID(TrashId).putObject(deck)\r\n        end\r\n    end\r\n\r\n    playerCountMenu()\r\nend\r\n\r\nfunction soloModeClick(obj, player)\r\n    createBotColorMenu()\r\nend\r\n\r\nfunction botRedClick(obj, player)\r\n  BotColor = \"Red\"\r\n  if Player[BotColor].steam_name ~= nil then\r\n    broadcastToAll(\"That seat is already occupied. Choose a different seat.\", {1, 1, 1})\r\n    return\r\n  end\r\n  SoloGame = true\r\n  createBotDiffScoreMenu(player)\r\nend\r\n\r\nfunction botYellowClick(obj, player)\r\n  BotColor = \"Yellow\"\r\n  if Player[BotColor].steam_name ~= nil then\r\n    broadcastToAll(\"That seat is already occupied. Choose a different seat.\", {1, 1, 1})\r\n    return\r\n  end\r\n  SoloGame = true\r\n  createBotDiffScoreMenu(player)\r\nend\r\n\r\nfunction botGreenClick(obj, player)\r\n  BotColor = \"Green\"\r\n  if Player[BotColor].steam_name ~= nil then\r\n    broadcastToAll(\"That seat is already occupied. Choose a different seat.\", {1, 1, 1})\r\n    return\r\n  end\r\n  SoloGame = true\r\n  createBotDiffScoreMenu(player)\r\nend\r\n\r\nfunction botBlueClick(obj, player)\r\n  BotColor = \"Blue\"\r\n  if Player[BotColor].steam_name ~= nil then\r\n    broadcastToAll(\"That seat is already occupied. Choose a different seat.\", {1, 1, 1})\r\n    return\r\n  end\r\n  SoloGame = true\r\n  createBotDiffScoreMenu(player)\r\nend\r\n\r\nfunction twoPlayersClick()\r\n    playerCount = 2\r\n    dealCount = 6\r\n\r\n    startLuaCoroutine(self, \"setupCo\")\r\nend\r\n\r\nfunction threePlayersClick()\r\n    playerCount = 3\r\n    dealCount = 7\r\n\r\n    startLuaCoroutine(self, \"setupCo\")\r\nend\r\n\r\nfunction fourPlayersClick()\r\n    playerCount = 4\r\n    dealCount = 8\r\n\r\n    startLuaCoroutine(self, \"setupCo\")\r\nend\r\n\r\nfunction startGameClick()\r\n    if SoloGame then\r\n        if playerNationSelectedSafetyCheck() then\r\n          playerCount = 2\r\n          dealCount = 6\r\n          startLuaCoroutine(self, \"setupCo\")\r\n        end\r\n    else\r\n        -- determine player count\r\n        playerCount = #getSeatedPlayersWithHands()\r\n        if playerNationSelectedSafetyCheck() then\r\n            if playerCount <= 2 then\r\n                dealCount = 6\r\n            elseif playerCount == 3 then\r\n                dealCount = 7\r\n            else\r\n                dealCount = 8\r\n            end\r\n            startLuaCoroutine(self, \"setupCo\")\r\n        end\r\n    end\r\nend\r\n\r\nfunction contains(arr, value)\r\n  for _, v in ipairs(arr) do\r\n    if v == value then\r\n      return true\r\n    end\r\n  end\r\n\r\n  return false\r\nend\r\n\r\nfunction removeCardFromDeck(deckGuid, cardGuid)\r\n  local deck = getObjectFromGUID(deckGuid)\r\n  if deck ~= nil then\r\n    local trashBag = getObjectFromGUID(TrashId)\r\n    local params = ({\r\n      guid = cardGuid,\r\n      position = trashBag.getPosition()\r\n    })\r\n\r\n    trashBag.putObject(deck.takeObject(params))\r\n  end\r\nend\r\n\r\nfunction removeNationTributaryCardFromDeck(powerCardGuid)\r\n  local targetGuids = RemoveTributarySetupGUID['_' .. powerCardGuid]\r\n  if targetGuids ~= nil then\r\n    removeCardFromDeck(targetGuids[1], targetGuids[2])\r\n  end\r\nend\r\n\r\nfunction removeSelectedNationFromTributaries()\r\n  for _, player in ipairs(Players) do\r\n    local zone = getObjectFromGUID(PlayerRegionsGUID[player].power)\r\n    for _, obj in ipairs(zone.getObjects()) do\r\n      if obj.type == 'Card' then\r\n        removeNationTributaryCardFromDeck(obj.guid)\r\n      elseif obj.type == 'Deck' then\r\n        for _, card in ipairs(obj.getObjects()) do\r\n          removeNationTributaryCardFromDeck(card.guid)\r\n        end\r\n      end\r\n    end\r\n  end\r\nend\r\n\r\nfunction removeUnselectedNations()\r\n  for _, guid in ipairs(NationPowerCardsGUID) do\r\n    if SelectedNationsGUID[\"_\" .. guid] == nil then\r\n      removeNation(guid)\r\n    end\r\n  end\r\nend\r\n\r\n-- guid is the nation's power card\r\nfunction removeNation(guid)\r\n  local trashBag = getObjectFromGUID(TrashId)\r\n  local card = getObjectFromGUID(guid)\r\n\r\n  if card == nil then\r\n    broadcastToAll(\"Can't remove nation with GUID:\" .. guid .. \". Object not found.\", {1, 0, 0})\r\n    return\r\n  end\r\n\r\n  local cardSet = card.getVar('CardSet')\r\n  for _, v in pairs(cardSet) do\r\n    if type(v) == 'table' then\r\n      for _, w in ipairs(v) do\r\n        trashBag.putObject(getObjectFromGUID(w))\r\n      end\r\n    else\r\n      trashBag.putObject(getObjectFromGUID(v))\r\n    end\r\n  end\r\nend\r\n\r\nfunction setupCo()\r\n    ButtonBoard.destroy()\r\n\r\n    removeSelectedNationFromTributaries()\r\n    removeUnselectedNations()\r\n\r\n    w(0.1)\r\n\r\n    for i, deckGuid in pairs(cardSetGUID) do\r\n        deck = getObjectFromGUID(deckGuid)\r\n        deckContent = deck.getObjects()\r\n        if playerCount == 2 then\r\n            for i, object in ipairs(deckContent) do\r\n                if contains(object.tags, \"P3\") or contains(object.tags, \"P4\") then\r\n                    CardGuid=object.guid\r\n                    local params = {\r\n                        position = getObjectFromGUID(TrashId).getPosition(),\r\n                        guid = CardGuid\r\n                    }\r\n                    getObjectFromGUID(TrashId).putObject(deck.takeObject(params))\r\n                    w(0.1)\r\n                end\r\n            end\r\n        elseif playerCount == 3 then\r\n            for _, object in ipairs(deckContent) do\r\n                if contains(object.tags, \"P4\") then\r\n                    CardGuid=object.guid\r\n                    local params = {\r\n                        position = getObjectFromGUID(TrashId).getPosition(),\r\n                        guid = CardGuid\r\n                    }\r\n                    getObjectFromGUID(TrashId).putObject(deck.takeObject(params))\r\n                    w(0.1)\r\n                end\r\n            end\r\n        end\r\n\r\n        if i < 4 then\r\n            for y=1, dealCount do\r\n                deck.takeObject({\r\n                position          = posDecks[i],\r\n                rotation          = {0.00, 180.00, 180.00},\r\n                smooth            = true,\r\n            })\r\n            deck.setPositionSmooth(posDecks[5])\r\n            end\r\n        elseif i == 4 then --Glory\r\n            deck.setPositionSmooth(posDecks[i])\r\n        elseif i == 5 then --Tributary Deck\r\n            deck.setPositionSmooth(posDecks[5])\r\n            w(2)\r\n            --Shuffles Decks\r\n            zoneObjects = getObjectFromGUID(ShuffleZoneGUID).getObjects()\r\n            for _, object in ipairs(zoneObjects) do\r\n                if object.type == \"Deck\" then\r\n                    object.shuffle()\r\n                end\r\n            end\r\n\r\n            -- Remove appropriate number of fame cards\r\n            deck = getObjectFromGUID(cardSetGUID[4])\r\n            if playerCount == 2 then\r\n              getObjectFromGUID(TrashId).putObject(deck.takeObject())\r\n              getObjectFromGUID(TrashId).putObject(deck.takeObject())\r\n            elseif playerCount == 3 then\r\n              getObjectFromGUID(TrashId).putObject(deck.takeObject())\r\n            end\r\n            w(1)\r\n\r\n            --Set down unrest\r\n            zoneObjects = getObjectFromGUID(UnrestZoneGUID).getObjects()\r\n            for _, object in ipairs(zoneObjects) do\r\n                if object.type == \"Deck\" then\r\n                    object.takeObject({\r\n                        position          = {posDecks[1][1], object.getPosition()[2], object.getPosition()[3]},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                    object.takeObject({\r\n                        position          = {posDecks[2][1], object.getPosition()[2], object.getPosition()[3]},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                    object.takeObject({\r\n                        position          = {-4.75, object.getPosition()[2], object.getPosition()[3]},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                    object.takeObject({\r\n                        position          = {-9.75, object.getPosition()[2], object.getPosition()[3]},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                break\r\n                end\r\n            end\r\n\r\n            w(0.5)\r\n\r\n            --Puts all decks at their appropriate spots\r\n            zoneObjects = getObjectFromGUID(DecksZoneGUID).getObjects()\r\n            for i, object in ipairs(zoneObjects) do\r\n                if object.type == \"Deck\" then\r\n                    object.takeObject({\r\n                        position          = {object.getPosition()[1], object.getPosition()[2] + 0.5, object.getPosition()[3] - 10.5},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                end\r\n            end\r\n\r\n            zoneObjects = getObjectFromGUID(GeneralDeckZoneGUID).getObjects()\r\n            for _, object in ipairs(zoneObjects) do\r\n                if object.type == \"Deck\" then\r\n                    object.takeObject({\r\n                        position          = {object.getPosition()[1] + 2.5, object.getPosition()[2] + 0.5, object.getPosition()[3] - 10.5},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                    object.takeObject({\r\n                        position          = {object.getPosition()[1] - 2.5, object.getPosition()[2] + 0.5, object.getPosition()[3] - 10.5},\r\n                        rotation          = {0.00, 180.00, 0.00},\r\n                        smooth            = true,\r\n                    })\r\n                break\r\n                end\r\n            end\r\n\r\n            w(1)\r\n\r\n            -- Place progress at civilized only cards\r\n            zoneObjects = getObjectFromGUID(MarketRowZoneGUID).getObjects()\r\n            local progressTokenBag = getObjectFromGUID(ProgressTokenBagGUID)\r\n            for _, object in ipairs(zoneObjects) do\r\n              if object.type == 'Card' and object.hasTag('Civilized') and not object.hasTag('Uncivilized') then\r\n                local pos = object.getPosition()\r\n                pos[2] = pos[2] + 0.5\r\n                progressTokenBag.takeObject({\r\n                  position = pos,\r\n                  rotation = {0, 180, 0}\r\n                })\r\n              end\r\n            end\r\n        end\r\n    end\r\n\r\n    local notes = \"[u]Scripted Scoring[/u]: Cards left in a player's hand and boxed regions (Draw, Discard, History, Play Area, and Power) will automatically be scored.\" ..\r\n    \" The 'Sumerians' card will not remove 2 'Unrest' cards but will pretend they don't exist for scoring purposes.\"\r\n\r\n    if SoloGame then\r\n      notes = notes .. \"\\n\\n[u]Bot Scoring[/u]: At the end of the game, place the Bot's draw deck and discard into the Bot's 'Play Area' before running the script.\"\r\n\r\n      -- setup solo tokens\r\n      local soloBag = getObjectFromGUID(soloBagGUID)\r\n      for i = 1, #soloTokensGUID do\r\n        soloBag.takeObject({\r\n          guid = soloTokensGUID[i],\r\n          position = posSoloTokens[i],\r\n          rotation = {0, 180, 0}\r\n        })\r\n      end\r\n\r\n      soloBag.takeObject({\r\n        guid = 'e43770',\r\n        rotation = {0, 180, 0}\r\n      }).setPositionSmooth({-36.50, 1.5, 25.00}, false, true)\r\n    end\r\n\r\n    Notes.setNotes(notes)\r\n\r\n    if SoloGame then\r\n      broadcastToAll(\"The rest of the Bot will need to be setup manually.\")\r\n      w(3)\r\n      broadcastToAll(\"Good luck and have fun!\")\r\n    else\r\n      local seatedPlayers = getSeatedPlayersWithHands()\r\n      local firstPlayerIndex = math.random(1, #seatedPlayers)\r\n      local firstPlayer = Player[seatedPlayers[firstPlayerIndex]]\r\n      broadcastToAll(\"The first player will be \" .. firstPlayer.steam_name ..\".\", firstPlayer.color)\r\n    end\r\n\r\n    return 1\r\nend\r\n\r\n\r\nfunction makeItSnappy()\r\n    snapsBoard = {}\r\n    snapX = -75 --0.33\r\n    snapY = 10 -- -0.911 -- -0.966\r\n    snapSpaceX = 5 -- -0.077\r\n    snapSpaceY = -1.2 -- 0.11\r\n\r\n    for i=1, 30 do\r\n        for y=1, 20 do\r\n            table.insert(snapsBoard, {\r\n                position = {snapX+snapSpaceX*i, 1, snapY+snapSpaceY*y},\r\n                rotation = {0, 180, 0},\r\n                rotation_snap = true,\r\n                })\r\n        end\r\n    end\r\n\r\n\r\n    Global.setSnapPoints(snapsBoard)\r\n\r\nend\r\n\r\n\r\nfunction w(some)\r\n    local Time = os.clock() + some\r\n    while os.clock() < Time do\r\n        coroutine.yield(0)\r\n    end\r\nend\r\n\r\n---------------------------------------------------------------------\r\n-- Scripted Scoring and Nation selection code below\r\n---------------------------------------------------------------------\r\nPlayers = {'Red', 'Yellow', 'Green', 'Blue'}\r\nCountableTags = {'Civilized', 'Uncivilized', 'Fame', 'Region', 'Unrest', 'Tributary', 'Metropolis', 'City', 'Star VP'}\r\nCountableInPlayTags = {'Pinned', 'Region', 'Long Walls', 'City', 'Metropolis', 'Pinned Not Region'}\r\nCountableIcons = {'Grain', 'Water', 'Bag'}\r\nCountableEtc = {'Cards'}\r\n\r\nPlayerRegionsGUID = {\r\n  Red = {\r\n    inPlay = '78f83f',\r\n    power = '020c3d',\r\n    deck = 'c473b9',\r\n    history = '020c3d',\r\n    hand = 'fb89a7'\r\n  },\r\n  Yellow = {\r\n    inPlay = '88bfb3',\r\n    power = '65388d',\r\n    deck = 'e5188d',\r\n    history = '65388d',\r\n    hand = '5306fd'\r\n  },\r\n  Green = {\r\n    inPlay = '905fd5',\r\n    power = '6b303e',\r\n    deck = 'ba9afa',\r\n    history = '6b303e',\r\n    hand = 'f718ed'\r\n  },\r\n  Blue = {\r\n    inPlay = 'b50a89',\r\n    power = '30cd0d',\r\n    deck = '634f85',\r\n    history = '3bc4ca',\r\n    hand = '0b6fa9'\r\n  }\r\n}\r\n\r\nPlayerTokensGUID = {\r\n  Red = {\r\n    materials = '7e05ab',\r\n    population = '8fe2e2',\r\n    progress = 'ec04f6'\r\n  },\r\n  Yellow = {\r\n    materials = '2bbd55',\r\n    population = '34adbe',\r\n    progress = '7df2d0'\r\n  },\r\n  Green = {\r\n    materials = '9852a8',\r\n    population = 'b4725a',\r\n    progress = '3253c7'\r\n  },\r\n  Blue = {\r\n    materials = '2b7603',\r\n    population = '5f75ca',\r\n    progress = '5be3e6'\r\n  }\r\n}\r\n\r\n-- [1] = development, [2] = nation deck, [3] = discard, [4] = power, [5] = draw deck\r\nPlayerSetupPos = {\r\n  Red = {{-60.02, 1.08, -33.00}, {-54.02, 1.08, -33.00}, {-48.02, 1.15, -32.99}, {-54.02, 1.14, -40.00}, {-48.02, 1.15, -39.99}},\r\n  Yellow = {{-24.00, 1.06, -33.00}, {-18.00, 1.06, -33.00}, {-12.00, 1.12, -33.00}, {-18.00, 1.12, -40.00}, {-12.00, 1.12, -40.00}},\r\n  Green = {{12.00, 1.08, -33.00}, {18.00, 1.08, -33.00}, {24.00, 1.15, -33.00}, {18.00, 1.14, -40.00}, {24.00, 1.15, -40.00}},\r\n  Blue = {{48.00, 1.08, -33.00}, {54.00, 1.08, -33.00}, {60.00, 1.15, -33.00}, {54.00, 1.14, -40.00}, {60.00, 1.15, -40.00}}\r\n}\r\n\r\nSumeriansCardGUID = '61d69e'\r\nCheckerGUID = '8a0e07'\r\nPlayerTagValues = {}\r\nPlayerInPlayTagValues = {}\r\nSelectedNationsByPlayerGUID = {}\r\nSelectedNationsGUID = {}\r\nSavedPositionsGUID = {}\r\nSoloGame = false\r\nSoloSelectForWho = 0  -- 0 = for player, 1 = for bot\r\n\r\nfunction calculateFinalScore()\r\n  startLuaCoroutine(self, \"calculateFinalScoreCo\")\r\nend\r\n\r\nfunction calculateFinalScoreCo()\r\n  local checkerObj = getObjectFromGUID(CheckerGUID)\r\n  local players = getSeatedPlayersWithHands()\r\n  local playerScore = {}\r\n\r\n  checkerObj.clearButtons()\r\n  broadcastToAll(\"Calculating score...\")\r\n\r\n  -- First need to do a count of all the card categories since some cards will rely on what other players have\r\n  for _, playerColor in ipairs(players) do\r\n    local countedTags = countCardTagsForPlayer(playerColor)\r\n    PlayerTagValues[playerColor] = countedTags.tags\r\n    PlayerInPlayTagValues[playerColor] = countedTags.inPlayTags\r\n\r\n    -- Add resource count into the tags\r\n    PlayerTagValues[playerColor]['Materials'] = getObjectFromGUID(PlayerTokensGUID[playerColor].materials).getVar('count')\r\n    PlayerTagValues[playerColor]['Population'] = getObjectFromGUID(PlayerTokensGUID[playerColor].population).getVar('count')\r\n    PlayerTagValues[playerColor]['Progress'] = getObjectFromGUID(PlayerTokensGUID[playerColor].progress).getVar('count')\r\n  end\r\n\r\n  -- Calculate the final score for all players\r\n  for _, playerColor in ipairs(players) do\r\n    playerScore[playerColor] = calculatePlayerScore(playerColor)\r\n  end\r\n\r\n  createCalculateScoreButton()\r\n\r\n  -- Display score for each player\r\n  local i = 0\r\n  local notes = '[u]**Score**[/u]\\n\\n'\r\n  local sortedScore = {}\r\n  for k, v in pairs(playerScore) do\r\n    table.insert(sortedScore, {color = k, score = v})\r\n  end\r\n\r\n  table.sort(sortedScore, function(a, b) return a.score > b.score end)\r\n\r\n  broadcastToAll(\"** Results **\", {1, 1, 1})\r\n  for k, v in pairs(sortedScore) do\r\n    local lblPlayerName = Player[v.color].steam_name\r\n    local color = Color[Player[v.color].color]:toHex()\r\n\r\n    if lblPlayerName == nil then\r\n      lblPlayerName = 'BOT'\r\n    end\r\n\r\n    notes = notes .. '[' .. color .. ']' .. lblPlayerName .. \"'s score: \" .. v.score .. \" VPs\\n\"\r\n\r\n    broadcastToAll(lblPlayerName .. \"'s score: \" .. v.score .. \" VPs\", Player[v.color].color)\r\n    i = i + 1\r\n  end\r\n  Notes.setNotes(notes)\r\n  return 1\r\nend\r\n\r\nfunction getSeatedPlayersWithHands()\r\n  local seatedPlayers = getSeatedPlayers()\r\n  local result = {}\r\n\r\n  if DEBUG then\r\n    return Players\r\n  end\r\n\r\n  for _, seatedPlayer in ipairs(seatedPlayers) do\r\n    for _, player in ipairs(Players) do\r\n      if seatedPlayer == player then\r\n        table.insert(result, player)\r\n        break\r\n      end\r\n    end\r\n  end\r\n\r\n  if SoloGame then\r\n    table.insert(result, BotColor)\r\n  end\r\n\r\n  return result\r\nend\r\n\r\nfunction getIfInHistory(player, objGUID)\r\n  local zone = getObjectFromGUID(PlayerRegionsGUID[player].history)\r\n  for _, obj in zone.getObjects() do\r\n    if obj.getGUID() == objGUID then\r\n      return true\r\n    end\r\n\r\n    if obj.type == 'Deck' then\r\n      for _, card in obj.getObjects() do\r\n        if card.getGUID() == objGUID then\r\n          return true;\r\n        end\r\n      end\r\n    end\r\n  end\r\n\r\n  return false\r\nend\r\n\r\nfunction getIfGarrisoned(player, obj, cardGuid)\r\n  if not getIfInPlayZone(player, obj) then\r\n    return false\r\n  end\r\n\r\n  -- Handle special case scenario if the card in question might be in a stack\r\n  if obj.type == 'Deck' and not obj.is_face_down then\r\n    local cards = obj.getObjects()\r\n    if cards[#cards].guid ~= cardGuid then\r\n      return true\r\n    end\r\n  end\r\n\r\n  local castPos = obj.getPosition()\r\n  castPos[2] = castPos[2] + 0.03\r\n  local hits = Physics.cast({\r\n    origin        = castPos,\r\n    direction     = {0, 1, 0},\r\n    type          = 1,\r\n    max_distance  = 0.5,\r\n  })\r\n\r\n  for _, hit in pairs(hits) do\r\n    if hit.hit_object.guid ~= obj.guid then\r\n      return true\r\n    end\r\n  end\r\n\r\n  return false\r\nend\r\n\r\nfunction getIfInPlayZone(player, obj)\r\n  local zones = obj.getZones()\r\n  for _, zone in pairs(zones) do\r\n    if zone.guid == PlayerRegionsGUID[player].inPlay then\r\n      return true\r\n    end\r\n  end\r\n\r\n  return false\r\nend\r\n\r\nfunction createCalculateScoreButton()\r\n  local checker = getObjectFromGUID(CheckerGUID)\r\n  if checker == nil then\r\n    return\r\n  end\r\n  checker.setLuaScript('')\r\n  checker.createButton({\r\n    click_function = \"calculateFinalScore\",\r\n    function_owner = Global,\r\n    label          = \"Calculate Score\",\r\n    position       = {0, 0.5, 0},\r\n    rotation       = {0, 0, 0},\r\n    width          = 2500,\r\n    height         = 400,\r\n    font_size      = 300,\r\n    tooltip        = '',\r\n  })\r\nend\r\n\r\nfunction countCardTagsForPlayer(playerColor)\r\n  local countedTags = {}\r\n  local countedInPlayTags = {}\r\n\r\n  hasSumerians = false\r\n\r\n  -- init empty table\r\n  for _, tag in ipairs(CountableTags) do\r\n    countedTags[tag] = 0\r\n  end\r\n  for _, tag in ipairs(CountableIcons) do\r\n    countedTags[tag] = 0\r\n  end\r\n  for _, tag in ipairs(CountableEtc) do\r\n    countedTags[tag] = 0\r\n  end\r\n  for _, tag in ipairs(CountableInPlayTags) do\r\n    countedInPlayTags[tag] = 0\r\n  end\r\n\r\n  for _, zoneGUID in pairs(PlayerRegionsGUID[playerColor]) do\r\n    countCardTagsAtZone(playerColor, getObjectFromGUID(zoneGUID), countedTags, countedInPlayTags)\r\n  end\r\n\r\n  if hasSumerians then\r\n    countedTags['Unrest'] = math.max(0, countedTags['Unrest'] - 2)\r\n  end\r\n\r\n  return {\r\n    tags = countedTags,\r\n    inPlayTags = countedInPlayTags\r\n  }\r\nend\r\n\r\n-- Extra tags are tags that appear more than once on the card\r\nfunction addExtraTags(obj, count)\r\n  local tags = obj.getVar('ExtraTags')\r\n  for k, v in pairs(tags) do\r\n    if count[k] ~= nil then\r\n      count[k] = count[k] + v\r\n    end\r\n  end\r\nend\r\n\r\nfunction countCardTagsAtZone(player, zone, countedTags, countedInPlayTags)\r\n  local inPlayZone = zone.guid == PlayerRegionsGUID[player].inPlay\r\n\r\n  for _, obj in ipairs(zone.getObjects()) do\r\n    if obj.type == \"Card\" then\r\n      local inPlay = inPlayZone and not getIfGarrisoned(player, obj, obj.guid)\r\n      -- Count main tags\r\n      for _, tag in ipairs(obj.getTags()) do\r\n        if countedTags[tag] ~= nil then\r\n          countedTags[tag] = countedTags[tag] + 1\r\n        end\r\n\r\n        if inPlay and countedInPlayTags[tag] ~= nil then\r\n          countedInPlayTags[tag] = countedInPlayTags[tag] + 1\r\n        end\r\n\r\n        if tag == 'Extra Tags' then\r\n          addExtraTags(obj, countedTags)\r\n          if inPlay then\r\n            addExtraTags(obj, countedInPlayTags)\r\n          end\r\n        end\r\n      end\r\n\r\n      -- Special conditional tag\r\n      if inPlay and obj.hasTag('Pinned') and not obj.hasTag('Region') then\r\n        countedInPlayTags['Pinned Not Region'] = countedInPlayTags['Pinned Not Region'] + 1\r\n      end\r\n\r\n      -- Count the icons on the cards\r\n      for _, icon in ipairs(CountableIcons) do\r\n        local val = obj.getVar(icon)\r\n        if val ~= nil then\r\n          countedTags[icon] = countedTags[icon] + val\r\n        end\r\n      end\r\n\r\n      countedTags['Cards'] = countedTags['Cards'] + 1\r\n      if obj.guid == SumeriansCardGUID then\r\n        hasSumerians = true\r\n      end\r\n\r\n    -- Cards in a deck are stored as tables, need to do some wierd stuff to get the correct values\r\n    elseif obj.type == \"Deck\" then\r\n      local checkerObj = getObjectFromGUID(CheckerGUID)\r\n      local inPlay = false\r\n\r\n      for _, card in ipairs(obj.getObjects()) do\r\n        for _, tag in ipairs(card.tags) do\r\n          if countedTags[tag] ~= nil then\r\n            countedTags[tag] = countedTags[tag] + 1\r\n          end\r\n\r\n          -- Last card, count tags if its inplay\r\n          if inPlayZone and card.index == obj.getQuantity() - 1 and not getIfGarrisoned(player, obj, card.guid) and countedInPlayTags[tag] ~= nil then\r\n            inPlay = true\r\n            countedInPlayTags[tag] = countedInPlayTags[tag] + 1\r\n          end\r\n        end\r\n\r\n        checkerObj.setLuaScript(card.lua_script)\r\n        checkerObj.setTags(card.tags)\r\n        checkerObj = checkerObj.reload()\r\n        w(0.005) -- Don't know what the minimum time is until an object is created\r\n        for _, icon in ipairs(CountableIcons) do\r\n          local val = checkerObj.getVar(icon)\r\n          if val ~= nil then\r\n            countedTags[icon] = countedTags[icon] + val\r\n          end\r\n        end\r\n\r\n        if checkerObj.hasTag('Extra Tags') then\r\n          addExtraTags(checkerObj, countedTags)\r\n          if inPlay then\r\n            addExtraTags(checkerObj, countedInPlayTags)\r\n          end\r\n        end\r\n\r\n        if inPlay and checkerObj.hasTag('Pinned') and not checkerObj.hasTag('Region') then\r\n          countedInPlayTags['Pinned Not Region'] = countedInPlayTags['Pinned Not Region'] + 1\r\n        end\r\n\r\n        if card.guid == SumeriansCardGUID then\r\n          hasSumerians = true\r\n        end\r\n      end\r\n\r\n      countedTags['Cards'] = countedTags['Cards'] + obj.getQuantity()\r\n    end\r\n  end\r\nend\r\n\r\nfunction calculatePlayerScore(player)\r\n  local score = 0\r\n\r\n  for _, zoneGUID in pairs(PlayerRegionsGUID[player]) do\r\n    score = score + scoreCardsAtZone(player, getObjectFromGUID(zoneGUID))\r\n  end\r\n\r\n  score = score + PlayerTagValues[player].Unrest * -2\r\n  score = score + getObjectFromGUID(PlayerTokensGUID[player].progress).getVar('count')\r\n\r\n  if SoloGame and player == BotColor then\r\n    local materials = getObjectFromGUID(PlayerTokensGUID[player].materials).getVar('count')\r\n    local population = getObjectFromGUID(PlayerTokensGUID[player].population).getVar('count')\r\n    if BotScoreType == 1 then\r\n      score = score + math.floor(materials / 10)\r\n      score = score + math.floor(population / 10)\r\n    elseif BotScoreType == 2 then\r\n      score = score + math.floor(materials / 5)\r\n      score = score + math.floor(population / 5)\r\n    end\r\n  end\r\n\r\n  return score\r\nend\r\n\r\nfunction scoreCardsAtZone(player, zone)\r\n  local score = 0\r\n  local checkerObj = getObjectFromGUID(CheckerGUID)\r\n\r\n  local inHistory = zone.guid == PlayerRegionsGUID[player].history\r\n  local inPlayArea = zone.guid == PlayerRegionsGUID[player].inPlay\r\n\r\n  for _, obj in ipairs(zone.getObjects()) do\r\n    if obj.type == 'Card' then\r\n\r\n      local objParams = {\r\n        inHistory = inHistory,\r\n        inGarrison = false,\r\n        inPlay = false,\r\n        isFaceDown = obj.is_face_down\r\n      }\r\n\r\n      if inPlayArea then\r\n        objParams.inGarrison = getIfGarrisoned(player, obj, obj.guid)\r\n        objParams.inPlay = not objParams.inGarrison\r\n      end\r\n\r\n      local cardValue = scoreObj(obj, player, obj.guid, objParams)\r\n      --obj.setDescription(\"VPs earned: \" .. cardValue)\r\n      score = score + cardValue\r\n\r\n    elseif obj.type == 'Deck' then\r\n      for _, card in ipairs(obj.getObjects()) do\r\n        checkerObj.setName(card.name)\r\n        checkerObj.setLuaScript(card.lua_script)\r\n        checkerObj.setTags(card.tags)\r\n        checkerObj = checkerObj.reload()\r\n        w(0.005)\r\n        local objParams = {\r\n          inHistory = inHistory,\r\n          isFaceDown = obj.is_face_down,\r\n          deckObj = obj\r\n        }\r\n\r\n        if inPlayArea then\r\n          objParams.inGarrison = getIfGarrisoned(player, obj, card.guid)\r\n          objParams.inPlay = not objParams.inGarrison\r\n        end\r\n\r\n        local cardValue = scoreObj(checkerObj, player, card.guid, objParams)\r\n        --card.description = \"VPs earned: \" .. cardValue\r\n        score = score + cardValue\r\n      end\r\n    end\r\n  end\r\n\r\n  checkerObj.setName(\"\")\r\n\r\n  return score\r\nend\r\n\r\n-- Concatenates table2 into table1\r\nfunction concatTable(table1, table2)\r\n  for k, v in pairs(table2) do\r\n    table1[k] = v\r\n  end\r\nend\r\n\r\n-- Call the obj's getVP function. The origGUID is the GUID of the original object\r\n-- since the object itself might be the placeholder object if the original object\r\n-- is in a container\r\nfunction scoreObj(obj, player, origGUID, objParams)\r\n  local status = false\r\n  local result = nil\r\n\r\n  -- Bot has special scoring rules\r\n  if SoloGame and BotColor == player then\r\n    if obj.hasTag('X VP') then\r\n      status, result = pcall(getVP, obj)\r\n    elseif obj.hasTag('Question VP') then\r\n      status, result = pcall(getBotVP, obj)\r\n    elseif obj.hasTag('Star VP') then\r\n      status = true\r\n      result = 5\r\n    else\r\n      return 0\r\n    end\r\n\r\n    if not status or result == nil then\r\n      local msg = 'ERROR: Failed scoring card \"' .. obj.getName() .. '\" (guid:' .. origGUID .. ') for ' .. player\r\n      broadcastToAll(msg, {1, 0, 0})\r\n      return 0\r\n    end\r\n\r\n    return result\r\n  end\r\n\r\n  local params = {\r\n    obj = obj,\r\n    cardGUID = origGUID,\r\n    player = player,\r\n  }\r\n\r\n  concatTable(params, objParams)\r\n\r\n  -- If not null, it the object is a card in the deck\r\n  if objParams.deckObj ~= nil then\r\n    params.obj = objParams.deckObj\r\n  end\r\n\r\n  if obj.hasTag('X VP') or obj.hasTag('Question VP') or obj.hasTag('Star VP') then\r\n    status, result = pcall(getVP, obj, params)\r\n    -- Sometimes status returns true when result is nil for some reason\r\n    if not status or result == nil then\r\n      local msg = 'ERROR: Failed scoring card \"' .. obj.getName() .. '\" (guid:' .. origGUID .. ') for ' .. player\r\n      broadcastToAll(msg, {1, 0, 0})\r\n      log(msg)\r\n      return 0\r\n    end\r\n  else\r\n    return 0\r\n  end\r\n\r\n  if obj.hasTag('Star VP') then\r\n    result = math.min(result, 10)\r\n  end\r\n\r\n  return result\r\nend\r\n\r\nfunction getVP(obj, params)\r\n  return obj.call('getVP', params)\r\nend\r\n\r\nfunction getBotVP(obj)\r\n  return obj.call('getBotVP')\r\nend\r\n\r\nfunction getTagValue(params)\r\n  local tags = PlayerTagValues[params.player]\r\n  if tags == nil then\r\n    return nil\r\n  end\r\n\r\n  return tags[params.name]\r\nend\r\n\r\nfunction getInPlayTagValue(params)\r\n  local tags = PlayerInPlayTagValues[params.player]\r\n  if tags == nil then\r\n    return nil\r\n  end\r\n\r\n  return tags[params.name]\r\nend\r\n\r\nfunction getOtherUnrestTotal(params)\r\n  local sum = 0\r\n  for _, playerColor in ipairs(Players) do\r\n    if params.player ~= playerColor then\r\n      local val = getTagValue({\r\n        player = playerColor,\r\n        name = \"Unrest\"\r\n      })\r\n\r\n      if val ~= nil then\r\n        sum = sum + val\r\n      end\r\n    end\r\n  end\r\n  return sum\r\nend\r\n\r\nfunction countCardsInZone(zone)\r\n  local sum = 0\r\n    for _, obj in ipairs(zone.getObjects()) do\r\n      if obj.type == 'Card' then\r\n        sum = sum + 1\r\n      elseif obj.type == 'Deck' then\r\n        sum = sum + obj.getQuantity()\r\n      end\r\n    end\r\n  return sum\r\nend\r\n\r\nfunction getHistoryCardCount(params)\r\n  return countCardsInZone(getObjectFromGUID(PlayerRegionsGUID[params.player].history))\r\nend\r\n\r\nfunction getExileCardCount(params)\r\n  return countCardsInZone(getObjectFromGUID(ExileZoneGUID))\r\nend\r\n\r\nfunction getGarrisonCount(params)\r\n  if not getIfInPlayZone(params.player, params.obj) then\r\n    return 0\r\n  end\r\n\r\n  local n = countCardsUnderThis(params.player, params.obj, 0)\r\n  return n\r\nend\r\n\r\nfunction countCardsUnderThis(player, obj, n)\r\n  local count = 0\r\n\r\n  -- failsafe for inf recursion\r\n  if n > 10 then\r\n    return 0\r\n  end\r\n\r\n  if obj.type == 'Card' then\r\n    count = 1\r\n  elseif obj.type == 'Deck' then\r\n    count = obj.getQuantity()\r\n  else\r\n    return 0\r\n  end\r\n\r\n  -- Dont count the card itself if at top level\r\n  if n == 0 then\r\n    count = count - 1\r\n  end\r\n\r\n  -- Check if there is a card or deck underneath\r\n  local hits = Physics.cast({\r\n    origin        = obj.getPosition(),\r\n    direction     = {0, -1, 0},\r\n    type          = 1,\r\n    max_distance  = 0.25\r\n  })\r\n\r\n  for _, hit in ipairs(hits) do\r\n    if hit.hit_object.guid ~= obj.guid then\r\n      count = count + countCardsUnderThis(player, hit.hit_object, n + 1)\r\n      break\r\n    end\r\n  end\r\n\r\n  return count\r\nend\r\n\r\nfunction createNationSetupButtons()\r\n  for _, guid in ipairs(NationPowerCardsGUID) do\r\n    getObjectFromGUID(guid).hide_when_face_down = false\r\n    createNationSetupButton(guid)\r\n  end\r\nend\r\n\r\nfunction createNationSetupButton(guid)\r\n  local card = getObjectFromGUID(guid)\r\n  card.clearButtons()\r\n\r\n  -- If nation already selected, don't create buttons\r\n  if SelectedNationsGUID[\"_\" .. guid] ~= nil then\r\n    return\r\n  end\r\n\r\n  if not card.is_face_down then\r\n      card.createButton({\r\n        click_function = \"nationSetupClick\",\r\n        function_owner = Global,\r\n        label = \"Select \" .. card.GetName(),\r\n        position = {0, 0.5, 2},\r\n        width = 1500,\r\n        height = 250,\r\n        font_size = 150,\r\n      })\r\n  else\r\n      card.createButton({\r\n        click_function = \"nationSetupClick\",\r\n        function_owner = Global,\r\n        label = \"Select \" .. card.GetName(),\r\n        position = {0, -0.5, 2},\r\n        rotation = {0, 0, 180},\r\n        width = 1500,\r\n        height = 250,\r\n        font_size = 150,\r\n      })\r\n  end\r\nend\r\n\r\nfunction nationSetupClick(obj, playerColor, altClick)\r\n  if Player[playerColor].getHandCount() == 0 then\r\n    broadcastToColor('Please take a seat before you select a nation.', playerColor)\r\n    return\r\n  end\r\n\r\n  local cardSet = obj.getVar('CardSet')\r\n\r\n  if cardSet == nil then\r\n    broadcastToAll(obj.getName() .. \" missing Card set values\", {1, 0, 0})\r\n    return\r\n  end\r\n\r\n  if SoloGame and SoloSelectForWho == 1 then\r\n    playerColor = BotColor\r\n  end\r\n\r\n  -- Return previous selected nation cards if it exists\r\n  if SelectedNationsByPlayerGUID[playerColor] ~= nil then\r\n    local card = getObjectFromGUID(SelectedNationsByPlayerGUID[playerColor])\r\n    local prevCardSet = card.getVar('CardSet')\r\n\r\n    for _, v in pairs(prevCardSet) do\r\n      if type(v) == 'table' then\r\n        for _, w in ipairs(v) do\r\n          local cards = getObjectFromGUID(w)\r\n          if cards ~= nil then\r\n              cards.setPositionSmooth(SavedPositionsGUID[\"_\" .. w], false, true)\r\n              cards.setLock(true)\r\n          end\r\n        end\r\n      else\r\n        local cards = getObjectFromGUID(v)\r\n        if cards ~= nil then\r\n            cards.setPositionSmooth(SavedPositionsGUID[\"_\" .. v], false, true)\r\n            cards.setLock(true)\r\n        end\r\n      end\r\n    end\r\n\r\n    SelectedNationsGUID[\"_\" .. card.guid] = nil\r\n    createNationSetupButton(prevCardSet.power)\r\n  end\r\n\r\n  SelectedNationsByPlayerGUID[playerColor] = obj.getGUID()\r\n  SelectedNationsGUID[\"_\" .. obj.getGUID()] = true\r\n\r\n  -- Save positions of the newly selected nation cards\r\n  for _, v in pairs(cardSet) do\r\n    if type(v) == 'table' then\r\n      for _, guid in ipairs(v) do\r\n        local cards = getObjectFromGUID(guid)\r\n        if cards ~= nil then\r\n            SavedPositionsGUID[\"_\" .. guid] = cards.getPosition()\r\n        end\r\n      end\r\n    else\r\n        local cards = getObjectFromGUID(v)\r\n        if cards ~= nil then\r\n            SavedPositionsGUID[\"_\" .. v] = getObjectFromGUID(v).getPosition()\r\n        end\r\n    end\r\n  end\r\n\r\n  -- Move cards into player's region\r\n  moveNationCards(playerColor, 1, cardSet.development)\r\n  moveNationCards(playerColor, 2, cardSet.nation)\r\n  moveNationCards(playerColor, 3, cardSet.supply)\r\n  moveNationCards(playerColor, 4, cardSet.power)\r\n  moveNationCards(playerColor, 5, cardSet.deck)\r\n  moveNationCards(playerColor, 0, cardSet.etc)\r\n\r\n  if SoloSelectForWho == nil then\r\n    SoloSelectForWho = 0\r\n  end\r\n\r\n  if SoloGame then\r\n    SoloSelectForWho = (SoloSelectForWho + 1) % 2\r\n    if SoloSelectForWho == 1 then\r\n      broadcastToAll(\"The next nation you select will be for the Bot.\", {1, 1, 1})\r\n    end\r\n  end\r\n\r\n  obj.clearButtons()\r\nend\r\n\r\nfunction moveNationCards(playerColor, setupPosIndex, guid)\r\n  if guid == nil then\r\n    return\r\n  end\r\n\r\n  -- ETC cards\r\n  if setupPosIndex < 1 then\r\n    local pos = PlayerSetupPos[playerColor][4]\r\n    local cards = getObjectFromGUID(guid)\r\n    if cards ~= nil then\r\n        cards.setPositionSmooth({pos[1] - 12, pos[2] + 0.2, pos[3]}, false, true)\r\n        cards.setLock(false)\r\n    end\r\n    return\r\n  end\r\n\r\n  if type(guid) == 'table' then\r\n    for i, v in ipairs(guid) do\r\n      local pos = PlayerSetupPos[playerColor][setupPosIndex]\r\n      local cards = getObjectFromGUID(v)\r\n      if cards ~= nil then\r\n          cards.setPositionSmooth({pos[1], pos[2] + (i - 1) * 0.2, pos[3]}, false, true)\r\n          cards.setLock(false)\r\n          if i == 2 then\r\n            cards.shuffle()\r\n          end\r\n      end\r\n    end\r\n  else\r\n    local cards = getObjectFromGUID(guid)\r\n    if cards ~= nil then\r\n        local pos = PlayerSetupPos[playerColor][setupPosIndex]\r\n        cards.setPositionSmooth({pos[1], pos[2] + 0.2, pos[3]}, false, true)\r\n        cards.setLock(false)\r\n        if setupPosIndex == 5 then\r\n          cards.shuffle()\r\n        end\r\n    end\r\n  end\r\nend\r\n",
   "LuaScriptState": "{\"SavedPositionsGUID\":[],\"SelectedNationsByPlayerGUID\":[],\"SelectedNationsGUID\":[],\"SoloGame\":false}",
   "XmlUI": "<!-- Xml UI. See documentation: https://api.tabletopsimulator.com/ui/introUI/ -->",
   "ObjectStates": [
@@ -352,9 +352,9 @@
         "posX": -41.0087166,
         "posY": 1.21660268,
         "posZ": -36.9867935,
-        "rotX": 0.0008625852,
+        "rotX": 0.000862585439,
         "rotY": 180.023636,
-        "rotZ": 0.00132656028,
+        "rotZ": 0.00132656074,
         "scaleX": 0.6377766,
         "scaleY": 1.0,
         "scaleZ": 0.6377766
@@ -402,11 +402,11 @@
       "Name": "Custom_Token",
       "Transform": {
         "posX": 67.0005341,
-        "posY": 1.21744156,
+        "posY": 1.21743929,
         "posZ": -41.996212,
-        "rotX": -1.66034624E-06,
+        "rotX": 1.77221693E-06,
         "rotY": 179.999832,
-        "rotZ": -2.62729145E-06,
+        "rotZ": 4.393506E-06,
         "scaleX": 0.6377766,
         "scaleY": 1.0,
         "scaleZ": 0.6377766
@@ -454,11 +454,11 @@
       "Name": "Custom_Token",
       "Transform": {
         "posX": 66.99906,
-        "posY": 1.217439,
+        "posY": 1.21743941,
         "posZ": -36.9962158,
-        "rotX": -1.40636257E-06,
+        "rotX": -8.19241961E-07,
         "rotY": 180.017532,
-        "rotZ": -2.19484E-06,
+        "rotZ": 1.94364915E-07,
         "scaleX": 0.6377766,
         "scaleY": 1.0,
         "scaleZ": 0.6377766
@@ -602,7 +602,7 @@
         "posX": -41.0,
         "posY": 1.21658075,
         "posZ": -42.0,
-        "rotX": 0.000840939232,
+        "rotX": 0.000840939465,
         "rotY": 180.0305,
         "rotZ": 0.00116733578,
         "scaleX": 0.6377766,
@@ -656,7 +656,7 @@
         "posZ": -31.9999981,
         "rotX": 0.000865874754,
         "rotY": 180.021271,
-        "rotZ": 0.00117415132,
+        "rotZ": 0.00117415178,
         "scaleX": 0.6377766,
         "scaleY": 1.0,
         "scaleZ": 0.6377766
@@ -810,7 +810,7 @@
         "posX": -5.00000048,
         "posY": 1.19349992,
         "posZ": -31.9999981,
-        "rotX": 2.13041517E-06,
+        "rotX": 2.130416E-06,
         "rotY": 180.014435,
         "rotZ": 5.293843E-07,
         "scaleX": 0.6377766,
@@ -862,9 +862,9 @@
         "posX": 66.9976044,
         "posY": 1.21993947,
         "posZ": -31.99622,
-        "rotX": -9.75831043E-08,
+        "rotX": 2.31111827E-07,
         "rotY": 180.017838,
-        "rotZ": 8.435656E-08,
+        "rotZ": -2.33269844E-07,
         "scaleX": 0.6377766,
         "scaleY": 1.0,
         "scaleZ": 0.6377766
@@ -1144,9 +1144,9 @@
         "posX": 34.5,
         "posY": 0.995103836,
         "posZ": 22.5,
-        "rotX": 9.56038448E-08,
+        "rotX": -1.11080478E-08,
         "rotY": 179.999863,
-        "rotZ": -1.60946726E-07,
+        "rotZ": -6.97527769E-09,
         "scaleX": 1.82,
         "scaleY": 1.0,
         "scaleZ": 1.82
@@ -1194,12 +1194,12 @@
       "GUID": "fbdfa7",
       "Name": "CardCustom",
       "Transform": {
-        "posX": -60.0076065,
-        "posY": 1.08231711,
-        "posZ": -39.9955559,
-        "rotX": 0.00524698757,
-        "rotY": 180.018784,
-        "rotZ": 359.9724,
+        "posX": -60.00761,
+        "posY": 1.08231664,
+        "posZ": -39.99554,
+        "rotX": 0.00528056175,
+        "rotY": 180.018875,
+        "rotZ": 359.972382,
         "scaleX": 1.82,
         "scaleY": 1.0,
         "scaleZ": 1.82
@@ -1247,12 +1247,12 @@
       "GUID": "e8926c",
       "Name": "CardCustom",
       "Transform": {
-        "posX": 12.008687,
-        "posY": 1.08272183,
-        "posZ": -39.99904,
-        "rotX": 0.004466928,
-        "rotY": 179.979462,
-        "rotZ": 359.970734,
+        "posX": 12.0086737,
+        "posY": 1.08271563,
+        "posZ": -39.99902,
+        "rotX": 0.004511475,
+        "rotY": 179.979721,
+        "rotZ": 359.9705,
         "scaleX": 1.82,
         "scaleY": 1.0,
         "scaleZ": 1.82
@@ -1471,7 +1471,7 @@
       "GMNotes": "",
       "ColorDiffuse": {
         "r": 0.96,
-        "g": 0.4389902,
+        "g": 0.438990146,
         "b": 0.807
       },
       "LayoutGroupSortIndex": 0,
@@ -1664,7 +1664,7 @@
       "ColorDiffuse": {
         "r": 0.905,
         "g": 0.898,
-        "b": 0.1719907
+        "b": 0.171990633
       },
       "LayoutGroupSortIndex": 0,
       "Value": 0,
@@ -1791,10 +1791,10 @@
       "Name": "Bag",
       "Transform": {
         "posX": 34.678154,
-        "posY": 0.618096352,
+        "posY": 0.61809653,
         "posZ": 29.89315,
         "rotX": 359.983124,
-        "rotY": 0.00101396081,
+        "rotY": 0.001013907,
         "rotZ": 359.920074,
         "scaleX": 1.74999952,
         "scaleY": 1.74999952,
@@ -1836,12 +1836,12 @@
       "GUID": "900028",
       "Name": "CardCustom",
       "Transform": {
-        "posX": 48.0086937,
-        "posY": 1.082765,
-        "posZ": -39.999897,
-        "rotX": 0.00439133355,
-        "rotY": 180.000046,
-        "rotZ": 359.971466,
+        "posX": 48.0086861,
+        "posY": 1.08273458,
+        "posZ": -39.9998741,
+        "rotX": 0.00451709051,
+        "rotY": 180.000214,
+        "rotZ": 359.970428,
         "scaleX": 1.82,
         "scaleY": 1.0,
         "scaleZ": 1.82
@@ -2369,7 +2369,7 @@
         "posX": -29.5000725,
         "posY": 1.040942,
         "posZ": 41.0000229,
-        "rotX": -6.823324E-08,
+        "rotX": -7.741275E-08,
         "rotY": 89.9994354,
         "rotZ": 180.0,
         "scaleX": 1.82,
@@ -3147,12 +3147,12 @@
       "GUID": "5bca1f",
       "Name": "Custom_Tile",
       "Transform": {
-        "posX": -24.004612,
-        "posY": 1.06795692,
-        "posZ": -41.4645271,
-        "rotX": 359.983521,
-        "rotY": -0.00278237881,
-        "rotZ": 0.0612085126,
+        "posX": -24.00483,
+        "posY": 1.06798708,
+        "posZ": -41.4643555,
+        "rotX": -0.005349888,
+        "rotY": -0.00485833967,
+        "rotZ": 0.08067944,
         "scaleX": 0.6673725,
         "scaleY": 1.0,
         "scaleZ": 0.6673725
@@ -3199,12 +3199,12 @@
       "GUID": "578234",
       "Name": "Custom_Tile",
       "Transform": {
-        "posX": -25.5046062,
-        "posY": 1.06813121,
-        "posZ": -41.4649773,
-        "rotX": 359.969971,
-        "rotY": 0.00112948078,
-        "rotZ": 0.07258274,
+        "posX": -25.5049744,
+        "posY": 1.068123,
+        "posZ": -41.46513,
+        "rotX": 359.9706,
+        "rotY": 0.0005305329,
+        "rotZ": 0.07204838,
         "scaleX": 0.6673725,
         "scaleY": 1.0,
         "scaleZ": 0.6673725
@@ -3251,12 +3251,12 @@
       "GUID": "281d63",
       "Name": "Custom_Tile",
       "Transform": {
-        "posX": -22.5045242,
-        "posY": 1.06931174,
-        "posZ": -41.46516,
-        "rotX": 359.972076,
-        "rotY": -0.0004375649,
-        "rotZ": 0.0598078333,
+        "posX": -22.5046577,
+        "posY": 1.0695188,
+        "posZ": -41.4649773,
+        "rotX": 359.9777,
+        "rotY": -0.00236569555,
+        "rotZ": 0.0620570667,
         "scaleX": 0.6673725,
         "scaleY": 1.0,
         "scaleZ": 0.6673725
@@ -3303,12 +3303,12 @@
       "GUID": "9fbce3",
       "Name": "Custom_Tile",
       "Transform": {
-        "posX": -61.5076065,
-        "posY": 1.09266818,
-        "posZ": -41.4955521,
-        "rotX": 359.978333,
-        "rotY": -0.0009405901,
-        "rotZ": 0.08445639,
+        "posX": -61.50799,
+        "posY": 1.09340549,
+        "posZ": -41.495697,
+        "rotX": 359.953033,
+        "rotY": -0.000784172851,
+        "rotZ": 0.07190506,
         "scaleX": 0.6673725,
         "scaleY": 1.0,
         "scaleZ": 0.6673725
@@ -3355,12 +3355,12 @@
       "GUID": "bf824d",
       "Name": "Custom_Tile",
       "Transform": {
-        "posX": -60.0075874,
-        "posY": 1.09367347,
-        "posZ": -41.49503,
-        "rotX": 359.987854,
-        "rotY": 359.993652,
-        "rotZ": 0.0676450953,
+        "posX": -60.00784,
+        "posY": 1.09508109,
+        "posZ": -41.4950027,
+        "rotX": 359.987518,
+        "rotY": 359.99292,
+        "rotZ": 0.0256735645,
         "scaleX": 0.6673725,
         "scaleY": 1.0,
         "scaleZ": 0.6673725
@@ -3407,12 +3407,12 @@
       "GUID": "e5b130",
       "Name": "Custom_Tile",
       "Transform": {
-        "posX": -58.5075836,
-        "posY": 1.09445548,
-        "posZ": -41.49553,
-        "rotX": 359.9634,
-        "rotY": -0.0007886279,
-        "rotZ": 0.03178054,
+        "posX": -58.5077171,
+        "posY": 1.09617412,
+        "posZ": -41.4955025,
+        "rotX": 359.9873,
+        "rotY": -0.0003344377,
+        "rotZ": 0.01873395,
         "scaleX": 0.6673725,
         "scaleY": 1.0,
         "scaleZ": 0.6673725
@@ -3459,12 +3459,12 @@
       "GUID": "62c0f6",
       "Name": "Custom_Tile",
       "Transform": {
-        "posX": 49.50732,
-        "posY": 1.096443,
-        "posZ": -41.4999847,
-        "rotX": 359.9712,
-        "rotY": 0.00441244245,
-        "rotZ": 0.0746784359,
+        "posX": 49.50717,
+        "posY": 1.09666681,
+        "posZ": -41.5000534,
+        "rotX": 359.987976,
+        "rotY": 0.00431655254,
+        "rotZ": 0.0196210966,
         "scaleX": 0.6673725,
         "scaleY": 1.0,
         "scaleZ": 0.6673725
@@ -3511,12 +3511,12 @@
       "GUID": "6d6e96",
       "Name": "Custom_Tile",
       "Transform": {
-        "posX": 46.5084572,
-        "posY": 1.09263933,
-        "posZ": -41.5000839,
-        "rotX": 359.963837,
-        "rotY": -0.00197775,
-        "rotZ": 0.117790751,
+        "posX": 46.5082054,
+        "posY": 1.09350085,
+        "posZ": -41.50014,
+        "rotX": 359.974548,
+        "rotY": -0.003307459,
+        "rotZ": 0.06891853,
         "scaleX": 0.6673725,
         "scaleY": 1.0,
         "scaleZ": 0.6673725
@@ -3563,12 +3563,12 @@
       "GUID": "f64f22",
       "Name": "Custom_Tile",
       "Transform": {
-        "posX": 48.00972,
-        "posY": 1.0959233,
-        "posZ": -41.497345,
-        "rotX": 359.993774,
-        "rotY": 0.007669292,
-        "rotZ": 0.03207978,
+        "posX": 48.0097046,
+        "posY": 1.093925,
+        "posZ": -41.49726,
+        "rotX": 359.982971,
+        "rotY": 0.006216064,
+        "rotZ": 0.0525192656,
         "scaleX": 0.6673725,
         "scaleY": 1.0,
         "scaleZ": 0.6673725
@@ -3615,12 +3615,12 @@
       "GUID": "de7a45",
       "Name": "Custom_Tile",
       "Transform": {
-        "posX": 13.5085812,
-        "posY": 1.09664631,
-        "posZ": -41.4992447,
-        "rotX": 359.988037,
-        "rotY": -0.0006550205,
-        "rotZ": 0.0194246676,
+        "posX": 13.5086536,
+        "posY": 1.09659994,
+        "posZ": -41.49924,
+        "rotX": 359.977783,
+        "rotY": -0.00381350541,
+        "rotZ": 0.040032208,
         "scaleX": 0.6673725,
         "scaleY": 1.0,
         "scaleZ": 0.6673725
@@ -3667,12 +3667,12 @@
       "GUID": "7a8416",
       "Name": "Custom_Tile",
       "Transform": {
-        "posX": 10.5087147,
-        "posY": 1.09324312,
-        "posZ": -41.499073,
-        "rotX": 359.9729,
-        "rotY": -0.001528161,
-        "rotZ": 0.07201405,
+        "posX": 10.5085325,
+        "posY": 1.09452581,
+        "posZ": -41.4993172,
+        "rotX": 359.971161,
+        "rotY": -0.00388564449,
+        "rotZ": 0.07194317,
         "scaleX": 0.6673725,
         "scaleY": 1.0,
         "scaleZ": 0.6673725
@@ -3719,12 +3719,12 @@
       "GUID": "e39c64",
       "Name": "Custom_Tile",
       "Transform": {
-        "posX": 12.0086308,
-        "posY": 1.09357083,
-        "posZ": -41.4984856,
-        "rotX": 359.983154,
-        "rotY": -0.00503206858,
-        "rotZ": 0.05244017,
+        "posX": 12.008584,
+        "posY": 1.09359658,
+        "posZ": -41.4985275,
+        "rotX": 359.985626,
+        "rotY": 359.991547,
+        "rotZ": 0.0530078746,
         "scaleX": 0.6673725,
         "scaleY": 1.0,
         "scaleZ": 0.6673725
@@ -4116,7 +4116,7 @@
         "posX": 82.00036,
         "posY": 0.9751034,
         "posZ": 6.99998856,
-        "rotX": -1.99664747E-08,
+        "rotX": -1.99664818E-08,
         "rotY": 180.031586,
         "rotZ": 4.70977035E-08,
         "scaleX": 1.82,
@@ -4173,7 +4173,7 @@
         "posX": 82.0003,
         "posY": 0.975111067,
         "posZ": 13.0001163,
-        "rotX": -3.70036978E-05,
+        "rotX": -3.70037124E-05,
         "rotY": 179.980957,
         "rotZ": 0.000271805155,
         "scaleX": 1.82,
@@ -4290,7 +4290,7 @@
         "posZ": 27.0,
         "rotX": -3.74802476E-05,
         "rotY": 179.9795,
-        "rotZ": 0.000274192629,
+        "rotZ": 0.000274192746,
         "scaleX": 1.82,
         "scaleY": 1.0,
         "scaleZ": 1.82
@@ -4457,9 +4457,9 @@
         "posX": 82.0011139,
         "posY": 0.975103438,
         "posZ": 35.0005,
-        "rotX": -1.10603864E-08,
+        "rotX": -1.106039E-08,
         "rotY": 180.018158,
-        "rotZ": 6.6593655E-09,
+        "rotZ": 6.65936728E-09,
         "scaleX": 1.82,
         "scaleY": 1.0,
         "scaleZ": 1.82
@@ -4567,9 +4567,9 @@
       "GUID": "46dd9f",
       "Name": "3DText",
       "Transform": {
-        "posX": -62.038044,
-        "posY": 1.189537,
-        "posZ": 41.24758,
+        "posX": -62.0380936,
+        "posY": 1.18950558,
+        "posZ": 41.24754,
         "rotX": 90.0,
         "rotY": 0.324008822,
         "rotZ": 0.0,
@@ -4616,9 +4616,9 @@
       "GUID": "5833b2",
       "Name": "3DText",
       "Transform": {
-        "posX": -61.7896576,
-        "posY": 1.124753,
-        "posZ": 34.2377129,
+        "posX": -61.7897072,
+        "posY": 1.12470341,
+        "posZ": 34.237648,
         "rotX": 90.0,
         "rotY": 0.324008822,
         "rotZ": 0.0,
@@ -4895,9 +4895,9 @@
         "posX": -100.000412,
         "posY": 0.975113451,
         "posZ": 13.0000734,
-        "rotX": -4.941754E-05,
+        "rotX": -4.94175547E-05,
         "rotY": 179.981857,
-        "rotZ": 0.0003727576,
+        "rotZ": 0.000372757728,
         "scaleX": 1.82,
         "scaleY": 1.0,
         "scaleZ": 1.82
@@ -5409,10 +5409,10 @@
       "Transform": {
         "posX": -20.08697,
         "posY": 0.657689452,
-        "posZ": 41.8624344,
-        "rotX": 1.34943029E-05,
-        "rotY": 359.992035,
-        "rotZ": 9.757427E-06,
+        "posZ": 41.862442,
+        "rotX": 5.0067224E-06,
+        "rotY": 359.9921,
+        "rotZ": 1.16940173E-05,
         "scaleX": 1.75,
         "scaleY": 1.75,
         "scaleZ": 1.75
@@ -5421,7 +5421,7 @@
       "Description": "",
       "GMNotes": "",
       "ColorDiffuse": {
-        "r": 0.128993154,
+        "r": 0.1289931,
         "g": 0.694,
         "b": 0.606999934
       },
@@ -5963,9 +5963,9 @@
         "posX": 19.2501469,
         "posY": 1.06982613,
         "posZ": 22.2507629,
-        "rotX": -4.605032E-08,
+        "rotX": 2.72895164E-08,
         "rotY": 179.998917,
-        "rotZ": 5.26099271E-08,
+        "rotZ": -2.16421778E-08,
         "scaleX": 1.82,
         "scaleY": 1.0,
         "scaleZ": 1.82
@@ -6819,9 +6819,9 @@
       "Transform": {
         "posX": -36.2501259,
         "posY": 1.06982613,
-        "posZ": 33.7503,
-        "rotX": -2.544046E-07,
-        "rotY": 180.000565,
+        "posZ": 33.75031,
+        "rotX": -3.25432154E-07,
+        "rotY": 180.0006,
         "rotZ": 180.0,
         "scaleX": 1.82,
         "scaleY": 1.0,
@@ -7755,7 +7755,7 @@
         "posX": -29.50008,
         "posY": 1.040942,
         "posZ": 34.0000153,
-        "rotX": 6.827099E-09,
+        "rotX": -1.62234119E-08,
         "rotY": 89.99999,
         "rotZ": 180.0,
         "scaleX": 1.82,
@@ -8278,9 +8278,9 @@
         "posX": 19.2501431,
         "posY": 0.995103836,
         "posZ": 31.750639,
-        "rotX": -1.59831846E-08,
+        "rotX": -1.34872442E-08,
         "rotY": 180.000092,
-        "rotZ": -8.804233E-08,
+        "rotZ": -4.72557531E-08,
         "scaleX": 1.82,
         "scaleY": 1.0,
         "scaleZ": 1.82
@@ -8334,7 +8334,7 @@
         "posX": -42.25011,
         "posY": 1.10833836,
         "posZ": 33.75003,
-        "rotX": 8.380067E-08,
+        "rotX": 4.320642E-08,
         "rotY": 179.999741,
         "rotZ": 180.0,
         "scaleX": 1.82,
@@ -9708,7 +9708,7 @@
         "posX": -48.25014,
         "posY": 1.07464015,
         "posZ": 33.7500458,
-        "rotX": -1.02252633E-08,
+        "rotX": -2.41099563E-09,
         "rotY": 180.000687,
         "rotZ": 180.0,
         "scaleX": 1.82,
@@ -10672,7 +10672,7 @@
         "posX": -56.2501068,
         "posY": 1.055384,
         "posZ": 33.75003,
-        "rotX": -2.68522466E-08,
+        "rotX": -2.36009114E-08,
         "rotY": 180.000061,
         "rotZ": 180.0,
         "scaleX": 1.82,
@@ -11374,7 +11374,7 @@
         "posX": -36.2501221,
         "posY": 1.06982613,
         "posZ": 40.750042,
-        "rotX": 7.607509E-09,
+        "rotX": -8.377816E-09,
         "rotY": 180.0001,
         "rotZ": 180.0,
         "scaleX": 1.82,
@@ -12368,7 +12368,7 @@
         "posX": -42.2501678,
         "posY": 1.10833836,
         "posZ": 40.7500534,
-        "rotX": -2.79836083E-08,
+        "rotX": 3.00680263E-08,
         "rotY": 180.000153,
         "rotZ": 180.0,
         "scaleX": 1.82,
@@ -13864,7 +13864,7 @@
         "posX": -48.2501373,
         "posY": 1.07464015,
         "posZ": 40.7500458,
-        "rotX": -1.0256236E-07,
+        "rotX": -1.06300391E-07,
         "rotY": 180.0,
         "rotZ": 180.0,
         "scaleX": 1.82,
@@ -14872,7 +14872,7 @@
         "posX": -56.250103,
         "posY": 1.055384,
         "posZ": 40.7500343,
-        "rotX": -6.71925164E-08,
+        "rotX": -6.332677E-08,
         "rotY": 180.000092,
         "rotZ": 180.0,
         "scaleX": 1.82,
@@ -16496,7 +16496,7 @@
         "posZ": 55.4857254,
         "rotX": 5.37603455E-06,
         "rotY": 180.025818,
-        "rotZ": 1.18245771E-05,
+        "rotZ": 1.18245807E-05,
         "scaleX": 1.74999952,
         "scaleY": 1.74999952,
         "scaleZ": 1.74999952
@@ -27151,7 +27151,7 @@
         "posX": 81.8969,
         "posY": 1.02408791,
         "posZ": 41.1050644,
-        "rotX": -0.001306809,
+        "rotX": -0.0013068096,
         "rotY": 89.92757,
         "rotZ": 179.999969,
         "scaleX": 1.82,
@@ -28631,7 +28631,7 @@
         "posX": -95.00286,
         "posY": 1.00649941,
         "posZ": -0.99807477,
-        "rotX": 7.299894E-09,
+        "rotX": 7.299897E-09,
         "rotY": 180.033585,
         "rotZ": 4.75443933E-08,
         "scaleX": 1.82,
@@ -31758,7 +31758,7 @@
         "posX": -100.000336,
         "posY": 1.04816389,
         "posZ": 13.0000448,
-        "rotX": -0.00160297658,
+        "rotX": -0.00160297763,
         "rotY": 90.01011,
         "rotZ": 179.999878,
         "scaleX": 1.82,
@@ -37208,9 +37208,9 @@
         "posX": -95.00092,
         "posY": 1.00168526,
         "posZ": 40.991745,
-        "rotX": 5.806645E-09,
+        "rotX": 5.80664672E-09,
         "rotY": 180.027756,
-        "rotZ": -1.06293747E-07,
+        "rotZ": -1.06293776E-07,
         "scaleX": 1.82,
         "scaleY": 1.0,
         "scaleZ": 1.82
@@ -40341,9 +40341,9 @@
         "posX": 43.49981,
         "posY": 1.02168572,
         "posZ": 21.5000839,
-        "rotX": 2.13145785E-08,
+        "rotX": 1.472026E-08,
         "rotY": 180.009064,
-        "rotZ": -2.72247913E-08,
+        "rotZ": -2.71812084E-08,
         "scaleX": 4.5,
         "scaleY": 1.0,
         "scaleZ": 4.5
@@ -40651,12 +40651,12 @@
       "GUID": "a91fcd",
       "Name": "CardCustom",
       "Transform": {
-        "posX": -24.0046272,
-        "posY": 1.05634654,
-        "posZ": -39.96504,
-        "rotX": 0.00426971726,
-        "rotY": 180.339569,
-        "rotZ": 359.97226,
+        "posX": -24.0046329,
+        "posY": 1.05632794,
+        "posZ": -39.9650269,
+        "rotX": 0.0043626097,
+        "rotY": 180.339676,
+        "rotZ": 359.9716,
         "scaleX": 1.82,
         "scaleY": 1.0,
         "scaleZ": 1.82
@@ -40704,12 +40704,12 @@
       "GUID": "08652c",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": -61.50774,
-        "posY": 1.243847,
-        "posZ": -39.1957245,
-        "rotX": 359.984283,
-        "rotY": 359.991058,
-        "rotZ": 0.05945585,
+        "posX": -61.5077477,
+        "posY": 1.243423,
+        "posZ": -39.19573,
+        "rotX": 359.966156,
+        "rotY": 359.989258,
+        "rotZ": 0.05809903,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -40756,12 +40756,12 @@
       "GUID": "a13b94",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": -60.75604,
-        "posY": 1.48738837,
-        "posZ": -40.05488,
-        "rotX": 338.3506,
-        "rotY": 359.794281,
-        "rotZ": 0.08181674,
+        "posX": -60.7559357,
+        "posY": 1.48627841,
+        "posZ": -40.05476,
+        "rotX": 338.393341,
+        "rotY": 359.800354,
+        "rotZ": 0.0569756776,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -40808,12 +40808,12 @@
       "GUID": "8c07fb",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": -60.00789,
-        "posY": 1.24513042,
-        "posZ": -39.19527,
-        "rotX": 359.948669,
-        "rotY": 359.989563,
-        "rotZ": 0.04598012,
+        "posX": -60.00796,
+        "posY": 1.24397838,
+        "posZ": -39.1951828,
+        "rotX": 359.991,
+        "rotY": 359.987762,
+        "rotZ": 0.0443760455,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -40860,12 +40860,12 @@
       "GUID": "f6d49e",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": -58.5077248,
-        "posY": 1.24581671,
-        "posZ": -39.19573,
-        "rotX": 359.993774,
-        "rotY": -0.000257920939,
-        "rotZ": 0.0194084737,
+        "posX": -58.50772,
+        "posY": 1.24584043,
+        "posZ": -39.19566,
+        "rotX": 359.969177,
+        "rotY": -0.00053401693,
+        "rotZ": 0.0181058366,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -40912,12 +40912,12 @@
       "GUID": "80d47e",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": -59.2581367,
-        "posY": 1.48841977,
-        "posZ": -40.05522,
-        "rotX": 338.333923,
-        "rotY": 0.0385584049,
-        "rotZ": 0.0361867435,
+        "posX": -59.25815,
+        "posY": 1.48714077,
+        "posZ": -40.0550728,
+        "rotX": 338.3706,
+        "rotY": 0.0380587764,
+        "rotZ": 0.0301559027,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -40964,12 +40964,12 @@
       "GUID": "3367c8",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": -24.7541752,
-        "posY": 1.46192038,
-        "posZ": -40.02056,
-        "rotX": 338.249054,
-        "rotY": 359.912384,
-        "rotZ": 0.0889202058,
+        "posX": -24.7541161,
+        "posY": 1.461357,
+        "posZ": -40.02079,
+        "rotX": 338.1897,
+        "rotY": 359.9198,
+        "rotZ": 0.08103369,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41016,12 +41016,12 @@
       "GUID": "c6bcf8",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": -24.0046959,
-        "posY": 1.218901,
-        "posZ": -39.1651535,
-        "rotX": 359.949982,
-        "rotY": -9.807712E-05,
-        "rotZ": 0.09360978,
+        "posX": -24.00481,
+        "posY": 1.2190454,
+        "posZ": -39.16502,
+        "rotX": 359.967163,
+        "rotY": -0.00310000824,
+        "rotZ": 0.0337466635,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41068,12 +41068,12 @@
       "GUID": "880476",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": -23.2538433,
-        "posY": 1.46282125,
-        "posZ": -40.020813,
-        "rotX": 338.283142,
-        "rotY": 359.911652,
-        "rotZ": 0.060697563,
+        "posX": -23.25383,
+        "posY": 1.46303308,
+        "posZ": -40.0215,
+        "rotX": 338.179,
+        "rotY": 359.915131,
+        "rotZ": 0.0716670752,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41120,12 +41120,12 @@
       "GUID": "e8e5b3",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": -22.5046978,
-        "posY": 1.2195152,
-        "posZ": -39.16508,
-        "rotX": 359.978058,
-        "rotY": -0.00318060024,
-        "rotZ": 0.04341529,
+        "posX": -22.5047226,
+        "posY": 1.21948,
+        "posZ": -39.1651268,
+        "rotX": 359.9725,
+        "rotY": -0.00372206583,
+        "rotZ": 0.0486448221,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41172,12 +41172,12 @@
       "GUID": "78ff66",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": -25.50472,
-        "posY": 1.21650243,
-        "posZ": -39.1650963,
-        "rotX": 359.9706,
-        "rotY": 359.9937,
-        "rotZ": 0.09397217,
+        "posX": -25.5048141,
+        "posY": 1.21683609,
+        "posZ": -39.16498,
+        "rotX": 359.981079,
+        "rotY": 359.9919,
+        "rotZ": 0.09551129,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41224,12 +41224,12 @@
       "GUID": "fe3f38",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": 46.5083351,
-        "posY": 1.24437153,
-        "posZ": -39.19954,
-        "rotX": 359.973053,
-        "rotY": -0.00476710964,
-        "rotZ": 0.08877681,
+        "posX": 46.5084038,
+        "posY": 1.24480057,
+        "posZ": -39.19889,
+        "rotX": 359.989,
+        "rotY": -0.00236301683,
+        "rotZ": 0.06411329,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41276,12 +41276,12 @@
       "GUID": "678f94",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": 47.2753,
-        "posY": 1.49109483,
-        "posZ": -40.0447769,
-        "rotX": 337.904938,
-        "rotY": 359.241119,
-        "rotZ": 0.0874091238,
+        "posX": 47.275795,
+        "posY": 1.49141562,
+        "posZ": -40.0442543,
+        "rotX": 337.9672,
+        "rotY": 359.261963,
+        "rotZ": 0.0273862965,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41328,12 +41328,12 @@
       "GUID": "697844",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": 48.0268822,
-        "posY": 1.245026,
-        "posZ": -39.1679764,
-        "rotX": 359.981262,
-        "rotY": 359.77417,
-        "rotZ": 0.0802660361,
+        "posX": 48.0269737,
+        "posY": 1.24443817,
+        "posZ": -39.1679535,
+        "rotX": 359.9797,
+        "rotY": 359.773773,
+        "rotZ": 0.0457144976,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41380,12 +41380,12 @@
       "GUID": "276d13",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": 49.5081139,
-        "posY": 1.24591935,
-        "posZ": -39.19851,
-        "rotX": 359.984467,
-        "rotY": 0.00304112514,
-        "rotZ": 0.0442818664,
+        "posX": 49.50817,
+        "posY": 1.24608922,
+        "posZ": -39.1980362,
+        "rotX": 0.000604358,
+        "rotY": 0.003069222,
+        "rotZ": 0.0195343215,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41432,12 +41432,12 @@
       "GUID": "d4a6e9",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": 48.7547722,
-        "posY": 1.48730075,
-        "posZ": -40.0560951,
-        "rotX": 338.431244,
-        "rotY": 0.005763883,
-        "rotZ": 0.09966095,
+        "posX": 48.7548065,
+        "posY": 1.48770452,
+        "posZ": -40.056572,
+        "rotX": 338.3374,
+        "rotY": 0.000173809647,
+        "rotZ": 0.06448272,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41484,12 +41484,12 @@
       "GUID": "3edfc1",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": 10.50862,
-        "posY": 1.24431872,
-        "posZ": -39.1991,
-        "rotX": -0.005499721,
-        "rotY": -0.00273307972,
-        "rotZ": 0.0342256837,
+        "posX": 10.5084877,
+        "posY": 1.24352026,
+        "posZ": -39.19912,
+        "rotX": 359.982025,
+        "rotY": 359.991852,
+        "rotZ": 0.062395107,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41536,12 +41536,12 @@
       "GUID": "c37486",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": 11.2595406,
-        "posY": 1.49056661,
-        "posZ": -40.0552444,
-        "rotX": 339.1198,
-        "rotY": 359.9277,
-        "rotZ": 0.02233203,
+        "posX": 11.2593689,
+        "posY": 1.48994553,
+        "posZ": -40.0552177,
+        "rotX": 339.1395,
+        "rotY": 359.912933,
+        "rotZ": 0.0445500948,
         "scaleX": 0.3831857,
         "scaleY": 1.0,
         "scaleZ": 0.3831857
@@ -41588,12 +41588,12 @@
       "GUID": "5e9232",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": 12.00853,
-        "posY": 1.24527216,
-        "posZ": -39.1989059,
-        "rotX": 0.0100405114,
-        "rotY": -0.00162899925,
-        "rotZ": 0.000457418559,
+        "posX": 12.0084305,
+        "posY": 1.245038,
+        "posZ": -39.1988029,
+        "rotX": 0.002989746,
+        "rotY": 359.9917,
+        "rotZ": 0.0296233241,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41640,12 +41640,12 @@
       "GUID": "2ab042",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": 13.50868,
-        "posY": 1.24598038,
-        "posZ": -39.19887,
-        "rotX": 0.009366779,
-        "rotY": -0.002032999,
-        "rotZ": 359.989441,
+        "posX": 13.5086126,
+        "posY": 1.24646378,
+        "posZ": -39.198494,
+        "rotX": 359.986755,
+        "rotY": 359.993652,
+        "rotZ": 0.015452371,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41692,12 +41692,12 @@
       "GUID": "8f9645",
       "Name": "Custom_Token",
       "Transform": {
-        "posX": 12.7597437,
-        "posY": 1.48794222,
-        "posZ": -40.0594673,
-        "rotX": 338.3695,
-        "rotY": 359.917725,
-        "rotZ": 0.017115796,
+        "posX": 12.7594633,
+        "posY": 1.487588,
+        "posZ": -40.0594139,
+        "rotX": 338.377838,
+        "rotY": 359.896,
+        "rotZ": 0.0612892956,
         "scaleX": 0.367304444,
         "scaleY": 1.0,
         "scaleZ": 0.367304444
@@ -41827,9 +41827,9 @@
         "posX": 47.9999962,
         "posY": 1.25293767,
         "posZ": -44.0,
-        "rotX": -1.17694732E-07,
+        "rotX": -1.66577138E-07,
         "rotY": 180.0,
-        "rotZ": -3.215408E-07,
+        "rotZ": -9.64645E-07,
         "scaleX": 1.0,
         "scaleY": 1.0,
         "scaleZ": 1.0
@@ -42000,8 +42000,8 @@
       "GMNotes": "",
       "ColorDiffuse": {
         "r": 0.854901969,
-        "g": 0.101960666,
-        "b": 0.0941175148,
+        "g": 0.101960607,
+        "b": 0.0941174552,
         "a": 0.09803922
       },
       "LayoutGroupSortIndex": 0,
@@ -42029,7 +42029,7 @@
             "z": -1.150834
           },
           "Rotation": {
-            "x": 0.00920679048,
+            "x": 0.009206792,
             "y": 359.968018,
             "z": -0.004418561
           }
@@ -42041,7 +42041,7 @@
             "z": -1.151765
           },
           "Rotation": {
-            "x": 0.00762218749,
+            "x": 0.00762218935,
             "y": 359.967957,
             "z": -0.0053474973
           }
@@ -42053,7 +42053,7 @@
             "z": -0.000449827756
           },
           "Rotation": {
-            "x": 0.00748486444,
+            "x": 0.007484866,
             "y": 359.9926,
             "z": -0.00498137344
           }
@@ -42091,7 +42091,7 @@
           "Rotation": {
             "x": -0.000273538782,
             "y": 359.96875,
-            "z": 0.00151672261
+            "z": 0.00151672249
           }
         },
         {
@@ -42101,7 +42101,7 @@
             "z": 0.000100884
           },
           "Rotation": {
-            "x": 0.0184405874,
+            "x": 0.0184405912,
             "y": 359.989258,
             "z": 359.975861
           }
@@ -42113,7 +42113,7 @@
             "z": 1.31580746
           },
           "Rotation": {
-            "x": 0.001392786,
+            "x": 0.00139278627,
             "y": 359.977081,
             "z": 0.00134650536
           }
@@ -42395,7 +42395,7 @@
       "ColorDiffuse": {
         "r": 0.905882359,
         "g": 0.6550767,
-        "b": 0.17254889,
+        "b": 0.172548831,
         "a": 0.09803922
       },
       "LayoutGroupSortIndex": 0,
@@ -42423,7 +42423,7 @@
             "z": -1.150834
           },
           "Rotation": {
-            "x": 0.009206791,
+            "x": 0.009206793,
             "y": 359.968018,
             "z": -0.004418561
           }
@@ -42435,7 +42435,7 @@
             "z": -1.151765
           },
           "Rotation": {
-            "x": 0.00762218842,
+            "x": 0.00762219029,
             "y": 359.967957,
             "z": -0.0053474973
           }
@@ -42447,7 +42447,7 @@
             "z": -0.000449827756
           },
           "Rotation": {
-            "x": 0.00748486537,
+            "x": 0.007484867,
             "y": 359.9926,
             "z": -0.00498137344
           }
@@ -42495,7 +42495,7 @@
             "z": 0.000100884
           },
           "Rotation": {
-            "x": 0.01844059,
+            "x": 0.018440593,
             "y": 359.989258,
             "z": 359.975861
           }
@@ -42507,7 +42507,7 @@
             "z": 1.31580746
           },
           "Rotation": {
-            "x": 0.00139278616,
+            "x": 0.00139278627,
             "y": 359.977081,
             "z": 0.00134650536
           }
@@ -42778,7 +42778,7 @@
         "posZ": -39.99994,
         "rotX": -5.150079E-05,
         "rotY": 180.022949,
-        "rotZ": 4.450093E-06,
+        "rotZ": 4.450095E-06,
         "scaleX": 4.56067848,
         "scaleY": 0.06,
         "scaleZ": 6.08
@@ -42787,9 +42787,9 @@
       "Description": "",
       "GMNotes": "",
       "ColorDiffuse": {
-        "r": 0.192156732,
+        "r": 0.192156672,
         "g": 0.7019608,
-        "b": 0.168627322,
+        "b": 0.168627262,
         "a": 0.09803922
       },
       "LayoutGroupSortIndex": 0,
@@ -42817,7 +42817,7 @@
             "z": -1.150834
           },
           "Rotation": {
-            "x": 0.009206791,
+            "x": 0.009206793,
             "y": 359.968018,
             "z": -0.004418561
           }
@@ -42829,7 +42829,7 @@
             "z": -1.151765
           },
           "Rotation": {
-            "x": 0.00762218842,
+            "x": 0.00762219029,
             "y": 359.967957,
             "z": -0.0053474973
           }
@@ -42841,7 +42841,7 @@
             "z": -0.000449827756
           },
           "Rotation": {
-            "x": 0.00748486537,
+            "x": 0.007484867,
             "y": 359.9926,
             "z": -0.00498137344
           }
@@ -42889,7 +42889,7 @@
             "z": 0.000100884
           },
           "Rotation": {
-            "x": 0.01844059,
+            "x": 0.018440593,
             "y": 359.989258,
             "z": 359.975861
           }
@@ -42901,7 +42901,7 @@
             "z": 1.31580746
           },
           "Rotation": {
-            "x": 0.00139278616,
+            "x": 0.00139278627,
             "y": 359.977081,
             "z": 0.00134650536
           }
@@ -43181,7 +43181,7 @@
       "Description": "",
       "GMNotes": "",
       "ColorDiffuse": {
-        "r": 0.117646925,
+        "r": 0.117646866,
         "g": 0.5294118,
         "b": 1.0,
         "a": 0.09803922
@@ -43211,7 +43211,7 @@
             "z": -1.150834
           },
           "Rotation": {
-            "x": 0.009206791,
+            "x": 0.009206793,
             "y": 359.968018,
             "z": -0.004418561
           }
@@ -43223,7 +43223,7 @@
             "z": -1.151765
           },
           "Rotation": {
-            "x": 0.00762218842,
+            "x": 0.00762219029,
             "y": 359.967957,
             "z": -0.0053474973
           }
@@ -43235,7 +43235,7 @@
             "z": -0.000449827756
           },
           "Rotation": {
-            "x": 0.00748486537,
+            "x": 0.007484867,
             "y": 359.9926,
             "z": -0.00498137344
           }
@@ -43283,7 +43283,7 @@
             "z": 0.000100884
           },
           "Rotation": {
-            "x": 0.01844059,
+            "x": 0.018440593,
             "y": 359.989258,
             "z": 359.975861
           }
@@ -43295,7 +43295,7 @@
             "z": 1.31580746
           },
           "Rotation": {
-            "x": 0.00139278616,
+            "x": 0.00139278627,
             "y": 359.977081,
             "z": 0.00134650536
           }
@@ -43582,11 +43582,11 @@
       "GUID": "be50bc",
       "Name": "3DText",
       "Transform": {
-        "posX": -54.0147934,
-        "posY": 1.06910145,
-        "posZ": -39.5922165,
+        "posX": -54.01487,
+        "posY": 1.06894124,
+        "posZ": -39.59245,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -43631,11 +43631,11 @@
       "GUID": "9c81a0",
       "Name": "3DText",
       "Transform": {
-        "posX": -54.0688858,
-        "posY": 1.0690099,
-        "posZ": -47.64423,
+        "posX": -54.0689621,
+        "posY": 1.06888008,
+        "posZ": -47.644455,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -43680,11 +43680,11 @@
       "GUID": "d73be8",
       "Name": "3DText",
       "Transform": {
-        "posX": -48.0516167,
-        "posY": 1.06895268,
-        "posZ": -39.633007,
+        "posX": -48.0516968,
+        "posY": 1.06877708,
+        "posZ": -39.6332932,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -43729,11 +43729,11 @@
       "GUID": "80d460",
       "Name": "3DText",
       "Transform": {
-        "posX": -47.8827858,
-        "posY": 1.06884193,
-        "posZ": -32.6425247,
+        "posX": -47.88286,
+        "posY": 1.06871235,
+        "posZ": -32.6427231,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -43778,11 +43778,11 @@
       "GUID": "7b3a6e",
       "Name": "3DText",
       "Transform": {
-        "posX": -39.59066,
-        "posY": 1.12932026,
-        "posZ": -26.4029255,
+        "posX": -39.59072,
+        "posY": 1.04901993,
+        "posZ": -26.4031754,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -43868,11 +43868,11 @@
       "GUID": "7f20aa",
       "Name": "3DText",
       "Transform": {
-        "posX": -3.64358115,
-        "posY": 1.10327721,
-        "posZ": -26.4239655,
+        "posX": -3.64358783,
+        "posY": 1.04181659,
+        "posZ": -26.4242268,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -43917,11 +43917,11 @@
       "GUID": "9e72c8",
       "Name": "3DText",
       "Transform": {
-        "posX": -18.0989685,
-        "posY": 1.10336506,
-        "posZ": -39.5499458,
+        "posX": -18.0989933,
+        "posY": 1.00493169,
+        "posZ": -39.55017,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -43966,11 +43966,11 @@
       "GUID": "c28bf1",
       "Name": "3DText",
       "Transform": {
-        "posX": -18.0775681,
-        "posY": 1.10528767,
-        "posZ": -47.62761,
+        "posX": -18.0776043,
+        "posY": 1.056804,
+        "posZ": -47.62784,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44015,11 +44015,11 @@
       "GUID": "55d514",
       "Name": "3DText",
       "Transform": {
-        "posX": -12.1075754,
-        "posY": 1.10524559,
-        "posZ": -39.5371,
+        "posX": -12.107584,
+        "posY": 1.03591287,
+        "posZ": -39.5373268,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44064,11 +44064,11 @@
       "GUID": "70c91a",
       "Name": "3DText",
       "Transform": {
-        "posX": -12.0995646,
-        "posY": 1.10527623,
-        "posZ": -32.5776062,
+        "posX": -12.0995731,
+        "posY": 1.0755645,
+        "posZ": -32.5778961,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44236,11 +44236,11 @@
       "GUID": "31c713",
       "Name": "3DText",
       "Transform": {
-        "posX": -30.0453243,
-        "posY": 1.10526848,
-        "posZ": -39.7417221,
+        "posX": -30.04537,
+        "posY": 1.05694,
+        "posZ": -39.7419662,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44285,11 +44285,11 @@
       "GUID": "c6504f",
       "Name": "3DText",
       "Transform": {
-        "posX": -66.05434,
-        "posY": 1.13225365,
-        "posZ": -39.7913857,
+        "posX": -66.0544357,
+        "posY": 1.08610475,
+        "posZ": -39.7915878,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44334,11 +44334,11 @@
       "GUID": "f00e4d",
       "Name": "3DText",
       "Transform": {
-        "posX": 17.943697,
-        "posY": 1.12981987,
-        "posZ": -39.64873,
+        "posX": 17.9437122,
+        "posY": 1.10491073,
+        "posZ": -39.6489868,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44383,11 +44383,11 @@
       "GUID": "59aaf1",
       "Name": "3DText",
       "Transform": {
-        "posX": 23.8970852,
-        "posY": 1.13171208,
-        "posZ": -39.63604,
+        "posX": 23.8971043,
+        "posY": 1.10294282,
+        "posZ": -39.6363144,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44432,11 +44432,11 @@
       "GUID": "6e7b61",
       "Name": "3DText",
       "Transform": {
-        "posX": 23.8926926,
-        "posY": 1.13174248,
-        "posZ": -32.6877823,
+        "posX": 23.8927135,
+        "posY": 1.10428715,
+        "posZ": -32.6879654,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44481,11 +44481,11 @@
       "GUID": "baf0a8",
       "Name": "3DText",
       "Transform": {
-        "posX": 17.9422626,
-        "posY": 1.13171577,
-        "posZ": -47.6180534,
+        "posX": 17.94229,
+        "posY": 1.08286524,
+        "posZ": -47.618248,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44571,11 +44571,11 @@
       "GUID": "41deb4",
       "Name": "3DText",
       "Transform": {
-        "posX": 5.97037649,
-        "posY": 1.13165855,
-        "posZ": -39.74996,
+        "posX": 5.97038174,
+        "posY": 1.11855888,
+        "posZ": -39.75022,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44661,11 +44661,11 @@
       "GUID": "efbe5f",
       "Name": "3DText",
       "Transform": {
-        "posX": 32.4032936,
-        "posY": 1.129694,
-        "posZ": -26.3838062,
+        "posX": 32.4033241,
+        "posY": 1.09436917,
+        "posZ": -26.38404,
         "rotX": 90.0,
-        "rotY": 0.666400552,
+        "rotY": 0.6664007,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44792,11 +44792,11 @@
       "GUID": "feb9b8",
       "Name": "3DText",
       "Transform": {
-        "posX": 53.9474068,
-        "posY": 1.12975514,
-        "posZ": -39.57113,
+        "posX": 53.9474754,
+        "posY": 1.06429648,
+        "posZ": -39.5714035,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44841,11 +44841,11 @@
       "GUID": "8c06ab",
       "Name": "3DText",
       "Transform": {
-        "posX": 59.83593,
-        "posY": 1.13168526,
-        "posZ": -39.44744,
+        "posX": 59.83604,
+        "posY": 1.09034753,
+        "posZ": -39.4477158,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44890,11 +44890,11 @@
       "GUID": "05cf5f",
       "Name": "3DText",
       "Transform": {
-        "posX": 59.93243,
-        "posY": 1.131735,
-        "posZ": -32.6149673,
+        "posX": 59.9325371,
+        "posY": 1.03176546,
+        "posZ": -32.61523,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44939,11 +44939,11 @@
       "GUID": "30d274",
       "Name": "3DText",
       "Transform": {
-        "posX": 53.92965,
-        "posY": 1.131731,
-        "posZ": -47.62623,
+        "posX": 53.9297142,
+        "posY": 1.06593049,
+        "posZ": -47.62648,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -44988,11 +44988,11 @@
       "GUID": "de3941",
       "Name": "3DText",
       "Transform": {
-        "posX": 41.9554138,
-        "posY": 1.1316663,
-        "posZ": -39.7465935,
+        "posX": 41.9554558,
+        "posY": 1.07483792,
+        "posZ": -39.74682,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
@@ -45037,9 +45037,9 @@
       "GUID": "e4a121",
       "Name": "3DText",
       "Transform": {
-        "posX": 68.31652,
-        "posY": 1.12972832,
-        "posZ": -26.4201374,
+        "posX": 68.31656,
+        "posY": 1.0756793,
+        "posZ": -26.42035,
         "rotX": 90.0,
         "rotY": 0.8330002,
         "rotZ": 0.0,
@@ -45086,11 +45086,11 @@
       "GUID": "330117",
       "Name": "3DText",
       "Transform": {
-        "posX": 26.1049156,
-        "posY": 0.981443465,
-        "posZ": 23.4667568,
+        "posX": 26.1049385,
+        "posY": 0.9813957,
+        "posZ": 23.4666958,
         "rotX": 90.0,
-        "rotY": 2.12241513E-08,
+        "rotY": 2.47615084E-08,
         "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
